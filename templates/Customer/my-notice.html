@@ -1,0 +1,77 @@
+{% extends 'Customer/base.html' %}
+{% load static %}
+
+{% block title %}我的通知{% endblock %}
+{% block page_title %}我的通知{% endblock %}
+{% block my_notice_active %}active{% endblock %}
+
+{% block main_content %}
+<div class="container-fluid">
+    {% if success_message %}
+      <div class="alert alert-success alert-dismissible" role="alert">
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+          <strong>成功</strong> {{ success_message }}
+      </div>
+    {% elif error_message %}
+      <div class="alert alert-danger alert-dismissible" role="alert">
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+          <strong>失败</strong> {{ error_message }}
+      </div>
+    {% endif %}
+    <div class="row">
+      <div class="col-lg-12">
+        <div class="card">
+          <div class="card-toolbar clearfix">
+            <form class="pull-right search-bar" method="get" action="{% url 'Customer:my_notice' %}" role="form">
+              <div class="input-group">
+                <input type="text" class="form-control" name="filter_keyword" value="{{ filter_keyword }}" placeholder="模糊搜索">
+                <span class="input-group-btn">
+                  <button class="btn btn-default" type="submit">搜索</button>
+                </span>
+              </div>
+
+            </form>
+            <div class="toolbar-btn-action">
+              <!-- 按钮区 -->
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table table-bordered table-hover">
+                <thead>
+                  <tr>
+                    <th>标题</th>
+                    <th>收到时间</th>
+                    <th>状态</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for notice in notices %}
+                  <tr>
+                    <td>
+                        <a href="{% url 'Customer:notice-detail' %}?notice_id={{ notice.id }}">{{ notice.title }}</a>
+                    </td>
+                    <td>{{ notice.create_time }}</td>
+                    {% if notice.is_read %}
+                    <td><span class="label label-success">已读</span></td>
+                    {% else %}
+                    <td><span class="label label-warning">未读</span></td>
+                    {% endif %}
+                  </tr>
+                  {% endfor %}
+
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block modal_content %}
+{% endblock %}
+
+{% block js_content %}
+{% endblock %}

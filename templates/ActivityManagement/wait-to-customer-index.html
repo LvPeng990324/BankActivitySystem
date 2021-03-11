@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="refresh" content="3;URL={% url 'Customer:customer_index' %}">
+    <title>等待跳转</title>
+</head>
+<body>
+<div style="text-align: center;">
+    <h1>{{ message }}</h1>
+    <p>页面将于<span id="time">3</span>秒跳转，<a href="{% url 'Customer:customer_index' %}">点击此处立即跳转</a></p>
+</div>
+
+</body>
+</html>

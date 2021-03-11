@@ -1,0 +1,245 @@
+{% extends 'AdminZero/base.html' %}
+{% load static %}
+
+{% block title %}客户经理管理{% endblock %}
+{% block page_title %}客户经理管理{% endblock %}
+{% block admin_management_active %}active open{% endblock %}
+{% block admin_third_managenet_active %}active{% endblock %}
+
+{% block main_content %}
+<div class="container-fluid">
+    {% if success_message %}
+      <div class="alert alert-success alert-dismissible" role="alert">
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+          <strong>成功</strong> {{ success_message }}
+      </div>
+    {% elif error_message %}
+      <div class="alert alert-danger alert-dismissible" role="alert">
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+          <strong>失败</strong> {{ error_message }}
+      </div>
+    {% endif %}
+    <div class="row">
+      <div class="col-lg-12">
+        <div class="card">
+          <div class="card-toolbar clearfix">
+            <form class="pull-right search-bar" method="get" action="{% url 'AdminZero:admin_third_management' %}" role="form">
+              <div class="input-group">
+                <input type="text" class="form-control" name="filter_keyword" value="{{ filter_keyword }}" placeholder="模糊搜索">
+                <span class="input-group-btn">
+                  <button class="btn btn-default" type="submit">搜索</button>
+                </span>
+              </div>
+
+            </form>
+            <div class="toolbar-btn-action">
+                <a data-toggle="modal" data-target="#add" class="btn btn-primary m-r-5"><i class="mdi mdi-plus"></i> 新增</a>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table table-bordered table-hover">
+                <thead>
+                  <tr>
+                    <th>姓名</th>
+                    <th>工号</th>
+                    <th>总客户数</th>
+                    <th>今日新增客户</th>
+                    <th>二级管理员</th>
+                    <th>操作</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for admin_third_customer_num in admin_thirds_customer_num %}
+                  <tr>
+                    <td>{{ admin_third_customer_num.admin_third.name }}</td>
+                    <td>{{ admin_third_customer_num.admin_third.job_num }}</td>
+                    <td>{{ admin_third_customer_num.total_customer_num }}</td>
+                    <td>{{ admin_third_customer_num.today_customer_num }}</td>
+                    <td>{{ admin_third_customer_num.admin_third.admin_second.name }}</td>
+                    <td nowrap="norap">
+                      <div class="btn-group-justified">
+                        <a data-toggle="modal" data-target="#change_password" class="btn btn-xs btn-default" title="修改密码"
+                        onclick="give_change_password_modal('{{ admin_third_customer_num.admin_third.id }}')">
+                            <i class="mdi mdi-textbox-password"></i>
+                        </a>
+                        <a data-toggle="modal" data-target="#change_admin_second" class="btn btn-xs btn-default" title="变更网点负责人"
+                        onclick="give_change_admin_second_modal('{{ admin_third_customer_num.admin_third.id }}',
+                                '{{ admin_third_customer_num.admin_third.admin_second.id }}')">
+                            <i class="mdi mdi-account-convert"></i>
+                        </a>
+                        <a data-toggle="modal" data-target="#del" class="btn btn-xs btn-default" title="删除"
+                        onclick="give_del_modal('{{ admin_third_customer_num.admin_third.id }}')">
+                            <i class="mdi mdi-window-close"></i>
+                        </a>
+                      </div>
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block modal_content %}
+<!-- 新增三级管理员 -->
+<div class="modal fade" id="add" tabindex="-1" role="dialog" aria-labelledby="delModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form action="{% url 'AdminZero:admin_third_management' %}" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <input name="action" value="add" hidden>
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="delModalLabel">新增客户经理</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="id_name" class="control-label">姓名：</label>
+                        <input class="form-control m-b-10" type="text" id="id_name" name="name" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="id_job_num" class="control-label">工号：</label>
+                        <input class="form-control m-b-10" type="text" id="id_job_num" name="job_num" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="id_password" class="control-label">密码：</label>
+                        <input class="form-control m-b-10" type="password" id="id_password" name="password" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="id_admin_second" class="control-label">网点负责人</label>
+                        <select id="id_admin_second" name="admin_second" class="form-control">
+                            {% for admin_second in admin_seconds %}
+                            <option value="{{ admin_second.id }}">{{ admin_second.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                    <button type="submit" class="btn btn-success">增加</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- 修改三级管理员密码 -->
+<div class="modal fade" id="change_password" tabindex="-1" role="dialog" aria-labelledby="delModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form action="{% url 'AdminZero:admin_third_management' %}" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <input name="action" value="change_password" hidden>
+                <input id="id_change_password_id" name="change_id" hidden>
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="delModalLabel">修改客户经理</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="id_change_password" class="control-label">新密码：</label>
+                        <input class="form-control m-b-10" type="password" id="id_change_password"
+                               name="change_password"  required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                    <button type="submit" class="btn btn-info">修改</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- 变更二级管理员 -->
+<div class="modal fade" id="change_admin_second" tabindex="-1" role="dialog" aria-labelledby="delModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form action="{% url 'AdminZero:admin_third_management' %}" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <input name="action" value="change_admin_second" hidden>
+                <input id="id_change_admin_second_id" name="change_id" hidden>
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="delModalLabel">变更网点负责人</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="id_change_admin_second" class="control-label">网点负责人：</label>
+                        <select id="id_change_admin_second" name="change_admin_second" class="form-control">
+                            {% for admin_second in admin_seconds %}
+                            <option value="{{ admin_second.id }}">{{ admin_second.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                    <button type="submit" class="btn btn-info">修改</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- 删除二级管理员 -->
+<div class="modal fade" id="del" tabindex="-1" role="dialog" aria-labelledby="delModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form action="{% url 'AdminZero:admin_third_management' %}" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <input name="action" value="del" hidden>
+                <input id="id_del_id" name="del_id" hidden>
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="delModalLabel">删除客户经理</h4>
+                </div>
+                <div class="modal-body">
+                    <p style="color: red">将删除此客户经理，切不可恢复，确定吗？</p>
+                    <small>删除前请确定该客户经理下所有客户已转给其他客户经理</small>
+                    <br>
+                    <small>否则将删除失败</small>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                    <button type="submit" class="btn btn-danger">删除</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block js_content %}
+<!-- 给修改密码模态框传值 -->
+<script type="text/javascript">
+    function give_change_password_modal(change_id) {
+        $('#id_change_password_id').val(change_id);
+    }
+</script>
+
+<!-- 给变更二级管理员模态框传值 -->
+<script type="text/javascript">
+    function give_change_admin_second_modal(change_id, admin_second_id) {
+        $('#id_change_admin_second_id').val(change_id);
+        $('#id_change_admin_second').val(admin_second_id);
+    }
+</script>
+
+<!-- 给删除模态框传值 -->
+<script type="text/javascript">
+    function give_del_modal(del_id) {
+        $('#id_del_id').val(del_id);
+    }
+</script>
+{% endblock %}

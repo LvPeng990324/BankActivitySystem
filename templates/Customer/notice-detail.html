@@ -1,0 +1,52 @@
+{% extends 'Customer/base.html' %}
+{% load static %}
+
+{% block title %}通知详情{% endblock %}
+{% block page_title %}通知详情{% endblock %}
+{% block my_notice_active %}active{% endblock %}
+
+{% block main_content %}
+<div class="container-fluid">
+    {% if success_message %}
+      <div class="alert alert-success alert-dismissible" role="alert">
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+          <strong>成功</strong> {{ success_message }}
+      </div>
+    {% elif error_message %}
+      <div class="alert alert-danger alert-dismissible" role="alert">
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+          <strong>失败</strong> {{ error_message }}
+      </div>
+    {% endif %}
+    <div class="row">
+      <div class="col-lg-12">
+        <div class="card">
+          <div class="card-toolbar clearfix">
+            <form class="pull-right search-bar" method="get" action="" role="form">
+              <div class="input-group">
+              </div>
+            </form>
+            <div class="toolbar-btn-action">
+              <!-- 按钮区 -->
+            </div>
+          </div>
+          <div class="card-body">
+              <div style="text-align: center;">
+                  <h1>{{ notice.title }}</h1>
+              </div>
+              <hr>
+              <div>
+                  <pre>{{ notice.content }}</pre>
+              </div>
+          </div>
+        </div>
+      </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block modal_content %}
+{% endblock %}
+
+{% block js_content %}
+{% endblock %}

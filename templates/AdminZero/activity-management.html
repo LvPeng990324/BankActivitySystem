@@ -1,0 +1,205 @@
+{% extends 'AdminZero/base.html' %}
+{% load static %}
+
+{% block title %}活动管理{% endblock %}
+{% block page_title %}活动管理{% endblock %}
+{% block activity_management_active %}active{% endblock %}
+
+{% block main_content %}
+<div class="container-fluid">
+    {% if success_message %}
+      <div class="alert alert-success alert-dismissible" role="alert">
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+          <strong>成功</strong> {{ success_message }}
+      </div>
+    {% elif error_message %}
+      <div class="alert alert-danger alert-dismissible" role="alert">
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+          <strong>失败</strong> {{ error_message }}
+      </div>
+    {% endif %}
+    <div class="row">
+      <div class="col-lg-12">
+        <div class="card">
+          <div class="card-toolbar clearfix">
+            <form class="pull-right search-bar" method="get" action="{% url 'AdminZero:activity_management' %}" role="form">
+              <div class="input-group">
+                <input type="text" class="form-control" name="filter_keyword" value="{{ filter_keyword }}" placeholder="模糊搜索">
+                <span class="input-group-btn">
+                  <button class="btn btn-default" type="submit">搜索</button>
+                </span>
+              </div>
+
+            </form>
+            <div class="toolbar-btn-action">
+                <a data-toggle="modal" data-target="#add" class="btn btn-primary m-r-5"><i class="mdi mdi-plus"></i> 新增</a>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table table-bordered table-hover">
+                <thead>
+                  <tr>
+                    <th>活动名</th>
+                    <th>创建时间</th>
+                    <th>截止时间</th>
+                    <th>发布人</th>
+                    <th>操作</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for activity in activities %}
+                  <tr>
+                    <td>{{ activity.name }}</td>
+                    <td>{{ activity.create_time }}</td>
+                    <td>{{ activity.end_time }}</td>
+                    <td>{{ activity.admin_second.name }}</td>
+                    <td nowrap="norap">
+                      <div class="btn-group-justified">
+                        <a data-toggle="modal" data-target="#change" class="btn btn-xs btn-default" href="#!" title="编辑"
+                        onclick="give_change_modal('{{ domain }}/admin/ActivitySignUp/activity/{{ activity.id }}/change/')">
+                            <i class="mdi mdi-pencil"></i>
+                        </a>
+                        <a data-toggle="modal" data-target="#preview" class="btn btn-xs btn-default" href="#!" title="预览"
+                        onclick="give_activity_preview_modal('{{ activity.id }}')">
+                            <i class="mdi mdi-eye"></i>
+                        </a>
+                        <a data-toggle="modal" data-target="#del" class="btn btn-xs btn-default" href="#!" title="删除"
+                        onclick="give_del_modal('{{ activity.id }}')">
+                            <i class="mdi mdi-window-close"></i>
+                        </a>
+                      </div>
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block modal_content %}
+<!-- 新增活动 -->
+<div class="modal fade" id="add" tabindex="-1" role="dialog" aria-labelledby="delModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form action="{% url 'AdminZero:activity_management' %}" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <input name="action" value="add" hidden>
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="delModalLabel">新增活动</h4>
+                </div>
+                <div class="modal-body">
+                    <p>请移步这里进行新增操作：<a href="{{ domain }}/admin/ActivitySignUp/activity/add/">新增</a></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- 修改活动 -->
+<div class="modal fade" id="change" tabindex="-1" role="dialog" aria-labelledby="delModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="delModalLabel">新增活动</h4>
+            </div>
+            <div class="modal-body">
+                <p>请移步这里进行修改操作：<a id="change_url">修改</a></p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 活动信息预览 -->
+<div class="modal fade" id="preview" tabindex="-1" role="dialog" aria-labelledby="delModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                        aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" id="delModalLabel">活动信息预览</h4>
+            </div>
+            <div class="modal-body" id="preview_body">
+                <!-- 预览主体 -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- 活动删除 -->
+<div class="modal fade" id="del" tabindex="-1" role="dialog" aria-labelledby="delModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form action="{% url 'AdminZero:activity_management' %}" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <input name="del_id" id="id_del_id" hidden>
+                <input name="action" value="del" hidden>
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="delModalLabel">删除活动</h4>
+                </div>
+                <div class="modal-body">
+                    <p style="color: red">这将删除此活动，确定吗？</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                    <button type="submit" class="btn btn-danger">删除</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% endblock %}
+
+{% block js_content %}
+<!-- 给修改活动模态框传值 -->
+<script type="text/javascript">
+    function give_change_modal(change_url) {
+        $('#change_url').attr('href', change_url);
+    }
+</script>
+
+<!-- 给删除活动模态框传值 -->
+<script type="text/javascript">
+    function give_del_modal(del_id) {
+        $('#id_del_id').val(del_id);
+    }
+</script>
+
+<!-- 给活动信息预览模态框传值 -->
+<script type="text/javascript">
+    function give_activity_preview_modal(activity_id) {
+        // 获取指定活动id
+        $.ajax({
+            type: "get",
+            url: "{% url 'ActivitySignUp:get_activity_content' %}",
+            traditional: true,
+            data: {'activity_id': activity_id},
+            success: function (arg) {
+                // 渲染到预览模态框中
+                $('#preview_body').html(arg.content);
+            }
+        })
+    }
+</script>
+{% endblock %}

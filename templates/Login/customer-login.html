@@ -1,0 +1,185 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+<title>客户登录</title>
+<link href="{% static 'Login/css/bootstrap.min.css' %}" rel="stylesheet">
+<link href="{% static 'Login/css/materialdesignicons.min.css' %}" rel="stylesheet">
+<link href="{% static 'Login/css/style.min.css' %}" rel="stylesheet">
+<style>
+.lyear-wrapper {
+    position: relative;
+}
+.lyear-login {
+    display: flex !important;
+    min-height: 100vh;
+    align-items: center !important;
+    justify-content: center !important;
+}
+.lyear-login:after{
+    content: '';
+    min-height: inherit;
+    font-size: 0;
+}
+.login-center {
+    background: #fff;
+    min-width: 29.25rem;
+    padding: 2.14286em 3.57143em;
+    border-radius: 3px;
+    margin: 2.85714em;
+}
+.login-header {
+    margin-bottom: 1.5rem !important;
+}
+.login-center .has-feedback.feedback-left .form-control {
+    padding-left: 38px;
+    padding-right: 12px;
+}
+.login-center .has-feedback.feedback-left .form-control-feedback {
+    left: 0;
+    right: auto;
+    width: 38px;
+    height: 38px;
+    line-height: 38px;
+    z-index: 4;
+    color: #dcdcdc;
+}
+.login-center .has-feedback.feedback-left.row .form-control-feedback {
+    left: 15px;
+}
+</style>
+</head>
+
+<body>
+<div class="row lyear-wrapper" style="background-color: gray">
+  <div class="lyear-login">
+    <div class="login-center">
+      <div class="login-header text-center">
+        <h3>客户登录</h3>
+      </div>
+        {% if error_message %}
+        <div class="alert alert-danger alert-dismissible" role="alert">
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+          <strong>登录失败</strong> {{ error_message }}
+        </div>
+        {% endif %} 
+      <div class="card-header">
+          <ul id="myTabs" class="nav nav-tabs" role="tablist">
+              <li class="active">
+                  <a href="#msg_login" id="msg_login_tab" role="tab" data-toggle="tab" aria-expanded="true">验证码登录</a>
+              </li>
+              <li class>
+                  <a href="#password_login" id="password_login_tab" role="tab" data-toggle="tab" aria-expanded="true">密码登录</a>
+              </li>
+          </ul>
+      </div>
+      <div class="card-body">
+          <div class="tab-content" id="myTabContent">
+              <div class="tab-pane fade active in" id="msg_login">
+                  <form action="{% url 'Login:customer_login' %}" method="post">
+                      {% csrf_token %}
+                      <input name="action" value="msg_login" hidden>
+                    <div class="form-group has-feedback feedback-left">
+                      <input type="text" placeholder="请输入您的手机号" class="form-control" name="phone" id="id_phone" />
+                      <span class="mdi mdi-cellphone form-control-feedback" aria-hidden="true"></span>
+                    </div>
+                    <div class="input-group form-group has-feedback feedback-left">
+                      <input type="text" placeholder="请输入验证码" class="form-control" id="id_msg_code" name="msg_code" />
+                      <span class="mdi mdi-lock form-control-feedback" aria-hidden="true"></span>
+                      <span class="input-group-btn">
+                          <button id="get_msg_code" class="btn btn-info" type="button" onclick="send_msg_code()">获取验证码</button>
+                      </span>
+                    </div>
+                    <div class="form-group">
+                      <label class="lyear-checkbox checkbox-primary m-t-10">
+                        <input name="remember_me" type="checkbox"><span>7天内自动登录</span>
+                      </label>
+                    </div>
+                    <div class="form-group">
+                      <button class="btn btn-block btn-primary" type="submit">立即登录</button>
+                    </div>
+                  </form>
+              </div>
+
+              <div class="tab-pane fade" id="password_login">
+                  <form action="{% url 'Login:customer_login' %}" method="post">
+                      {% csrf_token %}
+                      <input name="action" value="password_login" hidden>
+                    <div class="form-group has-feedback feedback-left">
+                      <input type="text" placeholder="请输入您的手机号" class="form-control" name="phone" id="id_phone" />
+                      <span class="mdi mdi-cellphone form-control-feedback" aria-hidden="true"></span>
+                    </div>
+                    <div class="form-group has-feedback feedback-left">
+                      <input type="password" placeholder="请输入密码" class="form-control" name="password" id="id_password" />
+                      <span class="mdi mdi-lock form-control-feedback" aria-hidden="true"></span>
+                    </div>
+                    <div class="form-group">
+                      <label class="lyear-checkbox checkbox-primary m-t-10">
+                        <input name="remember_me" type="checkbox"><span>7天内自动登录</span>
+                      </label>
+                    </div>
+                    <div class="form-group">
+                      <button class="btn btn-block btn-primary" type="submit">立即登录</button>
+                    </div>
+                  </form>
+              </div>
+          </div>
+      </div>
+      <hr>
+      <footer class="col-sm-12 text-center">
+        <p class="m-b-0">礼县邮政. All right reserved</p>
+      </footer>
+    </div>
+  </div>
+</div>
+<script type="text/javascript" src="{% static 'Login/js/jquery.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'Login/js/bootstrap.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'Login/js/bootstrap-notify.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'Login/js/lightyear.js' %}"></script>
+<!-- 获取验证码按钮倒计时 -->
+<script>
+    $('#get_msg_code').on('click', function () {
+        var that = $(this);
+        var timeo = 60;
+        that.text('重新发送' + timeo + 's');
+        that.attr('disabled', 'disabled');//禁止点击
+        var timeStop = setInterval(function () {
+            timeo--;
+            if (timeo > 0) {
+                that.text('重新发送' + timeo + 's');
+                that.attr('disabled', 'disabled');//禁止点击
+            } else {
+                timeo = 60;//当减到0时赋值为60
+                that.text('获取验证码');
+                clearInterval(timeStop);//清除定时器
+                that.removeAttr('disabled');//移除属性，可点击
+            }
+        }, 1000)
+    })
+</script>
+
+<!-- 发送短信验证码 -->
+<script type="text/javascript">
+    function send_msg_code() {
+        var phone_input = document.getElementById("id_phone");
+        var login_phone = phone_input.value;
+        $.ajax({
+            type: "get",
+            url: "{% url 'Login:customer_login_get_msg_code' %}",
+            traditional: true,
+            data: {'phone': login_phone},
+            success: function (arg) {
+                if (arg === 'success') {
+                    lightyear.notify('验证码发送成功', 'success', 3000);
+                }
+                else {
+                    lightyear.notify(arg, 'danger', 3000);
+                }
+            }
+        });
+    }
+</script>
+</body>
+</html>

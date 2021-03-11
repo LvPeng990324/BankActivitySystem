@@ -1,0 +1,167 @@
+{% extends 'AdminThird/base.html' %}
+{% load static %}
+
+{% block title %}批量推送{% endblock %}
+{% block page_title %}批量推送{% endblock %}
+{% block customer_notice_management_active %}active open{% endblock %}
+{% block batch_send_active %}active{% endblock %}
+
+{% block main_content %}
+<div class="container-fluid">
+    {% if success_message %}
+      <div class="alert alert-success alert-dismissible" role="alert">
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+          <strong>成功</strong> {{ success_message }}
+      </div>
+    {% elif error_message %}
+      <div class="alert alert-danger alert-dismissible" role="alert">
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+          <strong>失败</strong> {{ error_message }}
+      </div>
+    {% endif %}
+    <div class="row">
+      <div class="col-lg-12">
+        <div class="card">
+          <div class="card-toolbar clearfix">
+            <form class="pull-right search-bar" method="get" action="{% url 'AdminThird:batch_send' %}" role="form">
+              <div class="input-group">
+                <input type="text" class="form-control" name="filter_keyword" value="{{ filter_keyword }}" placeholder="模糊搜索">
+                <span class="input-group-btn">
+                  <button class="btn btn-default" type="submit">搜索</button>
+                </span>
+              </div>
+
+            </form>
+            <div class="toolbar-btn-action">
+              <a data-toggle="modal" data-target="#send" class="btn btn-primary m-r-5" onclick="give_send_notice_modal()">
+                  <i class="mdi mdi-message-plus"></i> 推送选中
+              </a>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table table-bordered table-hover">
+                <thead>
+                  <tr>
+                    <th>
+                        <label class="lyear-checkbox checkbox-primary">
+                            <input type="checkbox" id="check-all"><span></span>
+                        </label>
+                    </th>
+                    <th>姓名</th>
+                    <th>标签</th>
+                    <th>性别</th>
+                    <th>手机号</th>
+                    <th>地址</th>
+                    <th>参与活动</th>
+                    <th>报名时间</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for activity_record in activity_records %}
+                  <tr>
+                    <td>
+                        <label class="lyear-checkbox checkbox-primary">
+                            <input type="checkbox" name="ids[]" value="{{ activity_record.customer.id }}"><span></span>
+                        </label>
+                    </td>
+                    <td>{{ activity_record.customer.name }}</td>
+                    <td>
+                        <span class="label label-{{ activity_record.customer.tag_type }}">
+                            {{ activity_record.customer.tag }}
+                        </span>
+                    </td>
+                    <td>{{ activity_record.customer.gender }}</td>
+                    <td>{{ activity_record.customer.phone }}</td>
+                    <td><small>{{ activity_record.customer.town }}-{{ activity_record.customer.village }}-{{ activity_record.customer.group }}-{{ activity_record.customer.street }}</small></td>
+                    <td>{{ activity_record.activity.name }}</td>
+                    <td>{{ activity_record.create_time }}</td>
+                  </tr>
+                  {% endfor %}
+
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block modal_content %}
+<!-- 推送通知 -->
+<div class="modal fade" id="send" tabindex="-1" role="dialog" aria-labelledby="delModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form action="{% url 'AdminThird:batch_send' %}" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <input name="action" value="batch_send" hidden>
+                <input id="id_send_customer_ids" name="send_customer_ids" hidden>
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="delModalLabel">推送通知-已选中<span id="select_num">?</span>人</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="id_notice_id" class="control-label">要推送的通知：</label>
+                        <select class="form-control" id="id_notice_id" name="notice_id">
+                            {% for notice_template in notice_templates %}
+                            <option value="{{ notice_template.id }}">{{ notice_template.title }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <p class="form-control">
+                            <input type="checkbox" id="id_need_msg" name="need_msg">
+                            <label for="id_need_msg">需要短信提醒</label>
+                        </p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                    <button type="submit" class="btn btn-info">确认推送</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block js_content %}
+<!-- 复选框全选 -->
+<script type="text/javascript">
+    $("#check-all").change(function () {
+        if ($boxname = $(this).data('name')) {
+            $(this).closest('table').find("input[name='" + $boxname + "']").prop('checked', $(this).prop("checked"));
+        } else {
+            $(this).closest('table').find(".lyear-checkbox input[type='checkbox']").prop('checked', $(this).prop("checked"));
+        }
+	});
+</script>
+
+<!-- 给推送通知模态框传值 -->
+<script type="text/javascript">
+    function give_send_notice_modal() {
+        // 获取多选框选中的id们
+        var a = document.getElementsByName("ids[]");
+        var customer_ids = [];
+        for (var i = 0; i < a.length; i++) {
+            if (a[i].checked) {
+                customer_ids.push(a[i].value)
+            }
+        }
+        // 对id们进行去重并转为字符串，id之间用英标逗号分隔
+        customer_ids = [...new Set(customer_ids)]
+        var customer_ids_str = customer_ids.toString();
+        // 求出选中的人数
+        var select_num = customer_ids.length;
+        // 将相应数据渲染到模态框中
+        // 渲染选中人数
+        $('#select_num').html(select_num);
+        // 渲染记录选中id们的input
+        $('#id_send_customer_ids').val(customer_ids_str);
+    }
+</script>
+{% endblock %}

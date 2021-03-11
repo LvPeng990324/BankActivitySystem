@@ -1,0 +1,103 @@
+{% extends 'AdminZero/base.html' %}
+{% load static %}
+
+{% block title %}客户信息{% endblock %}
+{% block page_title %}客户信息{% endblock %}
+{% block customer_information_active %}active{% endblock %}
+
+{% block main_content %}
+<div class="container-fluid">
+    {% if success_message %}
+      <div class="alert alert-success alert-dismissible" role="alert">
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+          <strong>成功</strong> {{ success_message }}
+      </div>
+    {% elif error_message %}
+      <div class="alert alert-danger alert-dismissible" role="alert">
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+          <strong>失败</strong> {{ error_message }}
+      </div>
+    {% endif %}
+    <div class="row">
+      <div class="col-lg-12">
+        <div class="card">
+          <div class="card-toolbar clearfix">
+            <!-- 原搜索表单 -->
+            <div class="toolbar-btn-action">
+              <!-- 原新增按钮 -->
+            </div>
+          </div>
+          <div class="card-body">
+            <h3>选择要管理客户的地址范围</h3>
+            <form method="get" action="{% url 'AdminZero:customer_information' %}">
+                <div class="form-group">
+                    <div class="form-group">
+                        <select class="form-control" id="id_town" name="town" required>
+                            <option value="" disabled>---选择镇子---</option>
+                            {% for town in towns %}
+                            <option value="{{ town.name }}">{{ town.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <select class="form-control" id="id_village" name="village">
+                            <option value="">---选择村子（可不选）---</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <select class="form-control" id="id_group" name="group">
+                            <option value="">---选择组（可不选）---</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <button class="btn btn-info" type="submit">进入管理</button>
+                </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+</div>
+{% endblock %}
+
+
+{% block js_content %}
+<!-- 根据镇子选项填充村子 -->
+<script>
+    $(function(){
+      $("#id_town").change(function(){
+        $.getJSON('{% url 'Address:village_information' %}',{town: $(this).val()}, function(json, TextStatus){
+            //先清空
+            $("#id_village").empty();
+            var options = '';
+            options += '<option value="">---选择村子（可不选）---</option>';
+            for (var i = 0; i < json.length; i++) {
+                options += '<option value="' + json[i]['name'] + '">' + json[i]['name'] + '</option>';
+                //alert(options);
+            }
+            $("#id_village").prepend(options);
+        })
+      })
+    })
+</script>
+
+<!-- 根据村子选项填充组 -->
+<script>
+    $(function(){
+      $("#id_village").change(function(){
+        $.getJSON('{% url 'Address:group_information' %}',{village: $(this).val()}, function(json, TextStatus){
+            //先清空
+            $("#id_group").empty();
+            var options = '';
+            options += '<option value="">---选择组（可不选）---</option>';
+            for (var i = 0; i < json.length; i++) {
+                options += '<option value="' + json[i]['name'] + '">' + json[i]['name'] + '</option>';
+                //alert(options);
+            }
+            $("#id_group").prepend(options);
+        })
+      })
+    })
+</script>
+{% endblock %}

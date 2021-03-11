@@ -1,0 +1,101 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+    <title>{% block title %}{% endblock %}</title>
+    <link rel="icon" href="{% static 'logo/favicon.ico' %}" type="image/ico">
+    <link href="{% static 'AdminSecond/css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'AdminSecond/css/materialdesignicons.min.css' %}" rel="stylesheet">
+    <link href="{% static 'AdminSecond/css/style.min.css' %}" rel="stylesheet">
+
+    {% block css_content %}
+    {% endblock %}
+</head>
+
+<body>
+<div class="lyear-layout-web">
+  <div class="lyear-layout-container">
+    <!--左侧导航-->
+    <aside class="lyear-layout-sidebar">
+
+      <!-- logo -->
+      <div id="logo" class="sidebar-header">
+        <a href=""><img src="{% static 'logo/logo-sidebar.png' %}" title="logo" alt="logo" /></a>
+      </div>
+      <div class="lyear-layout-sidebar-scroll">
+
+        <nav class="sidebar-main">
+          <ul class="nav nav-drawer">
+            <li class="nav-item {% block index_active %}{% endblock %}"> <a href="{% url 'AdminSecond:admin_index' %}"><i class="mdi mdi-home"></i> 后台首页</a> </li>
+            <li class="nav-item {% block admin_third_management_active %}{% endblock %}"> <a href="{% url 'AdminSecond:admin_third_management' %}"><i class="mdi mdi-account"></i> 客户经理管理</a> </li>
+            <li class="nav-item {% block notice_template_management_active %}{% endblock %}"> <a href="{% url 'AdminSecond:notice_template_management' %}"><i class="mdi mdi-message-text"></i> 客户通知模板管理</a> </li>
+            <li class="nav-item {% block customer_information_active %}{% endblock %}"> <a href="{% url 'AdminSecond:customer_information' %}"><i class="mdi mdi-account-card-details"></i> 客户信息</a> </li>
+            <li class="nav-item {% block activity_management_active %}{% endblock %}"> <a href="{% url 'AdminSecond:activity_management' %}"><i class="mdi mdi-note-text"></i> 活动管理</a> </li>
+          </ul>
+        </nav>
+
+        <div class="sidebar-footer">
+          <p class="copyright">Copyright &copy; 2021. 礼县邮政 All rights reserved.</p>
+        </div>
+      </div>
+
+    </aside>
+    <!--End 左侧导航-->
+
+    <!--头部信息-->
+    <header class="lyear-layout-header">
+
+      <nav class="navbar navbar-default">
+        <div class="topbar">
+
+          <div class="topbar-left">
+            <div class="lyear-aside-toggler">
+              <span class="lyear-toggler-bar"></span>
+              <span class="lyear-toggler-bar"></span>
+              <span class="lyear-toggler-bar"></span>
+            </div>
+            <span class="navbar-page-title"> {% block page_title %}{% endblock %} </span>
+          </div>
+
+          <ul class="topbar-right">
+            <li class="dropdown dropdown-profile">
+              <a href="javascript:void(0)" data-toggle="dropdown">
+                <span>{{ name }} <span class="caret"></span></span>
+              </a>
+              <ul class="dropdown-menu dropdown-menu-right">
+                <li> <a href="{% url 'AdminSecond:profile' %}"><i class="mdi mdi-account"></i> 个人信息</a> </li>
+                <li> <a href="{% url 'AdminSecond:change_password' %}"><i class="mdi mdi-lock-outline"></i> 修改密码</a> </li>
+                <li class="divider"></li>
+                <li> <a href="{% url 'AdminSecond:logout' %}"><i class="mdi mdi-logout-variant"></i> 退出登录</a> </li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+      </nav>
+
+    </header>
+    <!--End 头部信息-->
+
+    <!--页面主要内容-->
+    <main class="lyear-layout-content">
+        {% block main_content %}
+        {% endblock %}
+
+        {% block modal_content %}
+        {% endblock %}
+    </main>
+    <!--End 页面主要内容-->
+  </div>
+</div>
+
+<script type="text/javascript" src="{% static 'AdminSecond/js/jquery.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'AdminSecond/js/bootstrap.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'AdminSecond/js/perfect-scrollbar.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'AdminSecond/js/main.min.js' %}"></script>
+
+{% block js_content %}
+{% endblock %}
+</body>
+</html>

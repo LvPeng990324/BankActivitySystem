@@ -1,0 +1,129 @@
+{% extends 'AdminThird/base.html' %}
+{% load static %}
+
+{% block title %}组管理——{{ village_name }}{% endblock %}
+{% block page_title %}组管理——{{ village_name }}{% endblock %}
+{% block activity_address_management_active %}active open{% endblock %}
+{% block group_management_active %}active{% endblock %}
+
+{% block main_content %}
+<div class="container-fluid">
+    {% if success_message %}
+      <div class="alert alert-success alert-dismissible" role="alert">
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+          <strong>成功</strong> {{ success_message }}
+      </div>
+    {% elif error_message %}
+      <div class="alert alert-danger alert-dismissible" role="alert">
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+          <strong>失败</strong> {{ error_message }}
+      </div>
+    {% endif %}
+    <div class="row">
+      <div class="col-lg-12">
+        <div class="card">
+          <div class="card-toolbar clearfix">
+            <!-- 原搜索表单 -->
+            <div class="toolbar-btn-action">
+              <a data-toggle="modal" data-target="#add" class="btn btn-primary m-r-5"><i class="mdi mdi-plus"></i> 新增</a>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table table-bordered table-hover">
+                <thead>
+                  <tr>
+                    <th>组名</th>
+                    <th>操作</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for group in groups %}
+                  <tr>
+                    <td>{{ group.name }}</td>
+                    <td nowrap="norap">
+                      <div class="btn-group-justified">
+                        <a data-toggle="modal" data-target="#del" class="btn btn-xs btn-default" title="删除"
+                        onclick="give_del_modal('{{ group.id }}')">
+                            <i class="mdi mdi-window-close"></i>
+                        </a>
+                      </div>
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block modal_content %}
+<!-- 新增组 -->
+<div class="modal fade" id="add" tabindex="-1" role="dialog" aria-labelledby="delModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form action="{% url 'AdminThird:group_management' %}" method="post"
+                  enctype="multipart/form-data">
+                {% csrf_token %}
+                <input name="action" value="add" hidden>
+                <input name="village_name" value="{{ village_name }}" hidden>
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="delModalLabel">新增组</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="id_group_name" class="control-label">组名：</label>
+                        <input class="form-control m-b-10" type="text" id="id_group_name" name="group_name"  required>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                    <button type="submit" class="btn btn-success">增加</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- 删除组 -->
+<div class="modal fade" id="del" tabindex="-1" role="dialog" aria-labelledby="delModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form action="{% url 'AdminThird:group_management' %}" method="post"
+                  enctype="multipart/form-data">
+                {% csrf_token %}
+                <input name="action" value="del" hidden>
+                <input id="id_del_id" name="del_id" hidden>
+                <input name="village_name" value="{{ village_name }}" hidden>
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="delModalLabel">删除组</h4>
+                </div>
+                <div class="modal-body">
+                    <p style="color: red">删除记录后将无法恢复，确定吗</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                    <button type="submit" class="btn btn-danger">删除</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block js_content %}
+<!-- 给确认删除模态框传值 -->
+<script type="text/javascript">
+    function give_del_modal(del_id) {
+        $('#id_del_id').val(del_id);
+    }
+</script>
+{% endblock %}

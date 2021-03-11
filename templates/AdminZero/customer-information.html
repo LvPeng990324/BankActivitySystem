@@ -1,0 +1,200 @@
+{% extends 'AdminZero/base.html' %}
+{% load static %}
+
+{% block title %}客户信息-{{ town }}-{{ village }}-{{ group }}{% endblock %}
+{% block page_title %}客户信息-{{ town }}-{{ village }}-{{ group }}{% endblock %}
+{% block customer_information_active %}active{% endblock %}
+
+{% block main_content %}
+<div class="container-fluid">
+    {% if success_message %}
+      <div class="alert alert-success alert-dismissible" role="alert">
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+          <strong>成功</strong> {{ success_message }}
+      </div>
+    {% elif error_message %}
+      <div class="alert alert-danger alert-dismissible" role="alert">
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+          <strong>失败</strong> {{ error_message }}
+      </div>
+    {% endif %}
+    <div class="row">
+      <div class="col-lg-12">
+        <div class="card">
+          <div class="card-toolbar clearfix">
+            <form class="pull-right search-bar" method="get" action="{% url 'AdminZero:customer_information' %}" role="form">
+              <div class="input-group">
+                <input type="text" class="form-control" name="filter_keyword" value="{{ filter_keyword }}" placeholder="模糊搜索">
+                <span class="input-group-btn">
+                  <button class="btn btn-default" type="submit">搜索</button>
+                </span>
+              </div>
+
+            </form>
+            <div class="toolbar-btn-action">
+                <!-- 按钮区 -->
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table table-bordered table-hover">
+                <thead>
+                  <tr>
+                    <th>姓名</th>
+                    <th>标签</th>
+                    <th>性别</th>
+                    <th>手机号</th>
+                    <th>地址</th>
+                    <th>参与活动</th>
+                    <th>客户经理</th>
+                    <th>报名时间</th>
+                    <th>操作</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for activity_record in activity_records %}
+                  <tr>
+                    <td>{{ activity_record.customer.name }}</td>
+                    <td>
+                        {% if activity_record.customer.is_vip %}
+                        <span class="label label-danger">会员</span>
+                        {% else %}
+                        <span class="label label-secondary">非会员</span>
+                        {% endif %}
+                        <span class="label label-{{ activity_record.customer.tag_type }}">
+                            {{ activity_record.customer.tag }}
+                        </span>
+                    </td>
+                    <td>{{ activity_record.customer.gender }}</td>
+                    <td>{{ activity_record.customer.phone }}</td>
+                    <td><small>{{ activity_record.customer.town }}-{{ activity_record.customer.village }}-{{ activity_record.customer.group }}-{{ activity_record.customer.street }}</small></td>
+                    <td>{{ activity_record.activity.name }}</td>
+                    <td>{{ activity_record.admin_third.name }}</td>
+                    <td>{{ activity_record.create_time }}</td>
+                    <td nowrap="norap">
+                      <div class="btn-group-justified">
+                        <a data-toggle="modal" data-target="#change_tag" class="btn btn-xs btn-default" title="修改标签"
+                        onclick="give_change_tag_modal(
+                            '{{ activity_record.customer.id }}',
+                                '{{ activity_record.customer.tag }}',
+                                '{{ activity_record.customer.tag_type }}'
+                        )">
+                            <i class="mdi mdi-tag"></i>
+                        </a>
+                        <a data-toggle="modal" data-target="#comment" class="btn btn-xs btn-default" title="备注"
+                        onclick="give_comment_modal('{{ activity_record.customer.id }}')">
+                            <i class="mdi mdi-comment-text"></i>
+                        </a>
+                      </div>
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block modal_content %}
+<!-- 修改客户标签 -->
+<div class="modal fade" id="change_tag" tabindex="-1" role="dialog" aria-labelledby="delModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form action="{% url 'AdminZero:customer_information' %}" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <input name="action" value="change_tag" hidden>
+                <input id="id_change_id" name="change_id" hidden>
+                <input name="town" value="{{ town }}" hidden>
+                <input name="village" value="{{ village }}" hidden>
+                <input name="group" value="{{ group }}" hidden>
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="delModalLabel">修改客户标签</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="id_change_tag" class="control-label">客户标签：</label>
+                        <input class="form-control m-b-10" type="text" id="id_change_tag"
+                               name="change_tag"  required>
+                        <label for="id_change_tag_type" class="control-label">标签类型：</label>
+                        <select class="form-control" id="id_change_tag_type" name="change_tag_type">
+                            <option value="secondary">灰</option>
+                            <option value="dark">黑</option>
+                            <option value="success">绿</option>
+                            <option value="info">蓝</option>
+                            <option value="danger">红</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                    <button type="submit" class="btn btn-info">修改</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- 查看/修改备注 -->
+<div class="modal fade" id="comment" tabindex="-1" role="dialog" aria-labelledby="delModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form action="{% url 'AdminZero:customer_information' %}" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <input name="action" value="change_comment" hidden>
+                <input name="comment_customer_id" id="id_comment_customer_id" hidden>
+                <input name="town" value="{{ town }}" hidden>
+                <input name="village" value="{{ village }}" hidden>
+                <input name="group" value="{{ group }}" hidden>
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="delModalLabel">备注</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="id_customer_comment" class="control-label">备注内容：</label>
+                        <textarea id="id_customer_comment" name="customer_comment" class="form-control" rows="10"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <button type="submit" class="btn btn-info">保存</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block js_content %}
+<!-- 给修改标签模态框传值 -->
+<script type="text/javascript">
+    function give_change_tag_modal(
+        change_id,
+        change_tag,
+        change_tag_type
+    ) {
+        $('#id_change_id').val(change_id);
+        $('#id_change_tag').val(change_tag);
+        $('#id_change_tag_type').val(change_tag_type);
+    }
+</script>
+
+<!-- 给备注模态框传值 -->
+<script type="text/javascript">
+    function give_comment_modal(comment_customer_id) {
+        // 给记录客户id的input传值
+        $('#id_comment_customer_id').val(comment_customer_id);
+        $.getJSON('{% url 'Customer:get_customer_comment' %}', {customer_id: comment_customer_id}, function (json, TextStatus) {
+            // 渲染到textarea框中
+            $('#id_customer_comment').html(json['comment']);
+        });
+    }
+</script>
+{% endblock %}

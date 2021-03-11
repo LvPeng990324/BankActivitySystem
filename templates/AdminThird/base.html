@@ -1,0 +1,118 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+    <title>{% block title %}{% endblock %}</title>
+    <link rel="icon" href="{% static 'logo/favicon.ico' %}" type="image/ico">
+    <link href="{% static 'AdminThird/css/bootstrap.min.css' %}" rel="stylesheet">
+    <link href="{% static 'AdminThird/css/materialdesignicons.min.css' %}" rel="stylesheet">
+    <link href="{% static 'AdminThird/css/style.min.css' %}" rel="stylesheet">
+
+    {% block css_content %}
+    {% endblock %}
+</head>
+
+<body>
+<div class="lyear-layout-web">
+  <div class="lyear-layout-container">
+    <!--左侧导航-->
+    <aside class="lyear-layout-sidebar">
+
+      <!-- logo -->
+      <div id="logo" class="sidebar-header">
+        <a href=""><img src="{% static 'logo/logo-sidebar.png' %}" title="logo" alt="logo" /></a>
+      </div>
+      <div class="lyear-layout-sidebar-scroll">
+
+        <nav class="sidebar-main">
+          <ul class="nav nav-drawer">
+            <li class="nav-item {% block index_active %}{% endblock %}"> <a href="{% url 'AdminThird:admin_index' %}"><i class="mdi mdi-home"></i> 后台首页</a> </li>
+            <li class="nav-item {% block customer_management_active %}{% endblock %}"> <a href="{% url 'AdminThird:customer_management' %}"><i class="mdi mdi-account"></i> 客户管理</a> </li>
+            <li class="nav-item nav-item-has-subnav {% block customer_notice_management_active %}{% endblock %}">
+              <a href="javascript:void(0)"><i class="mdi mdi-account-alert"></i> 客户通知管理</a>
+              <ul class="nav nav-subnav">
+                <li class="{% block notice_view_active %}{% endblock %}">
+                    <a href="{% url 'AdminThird:notice-view' %}">通知查看</a>
+                </li>
+                <li class="{% block batch_send_active %}{% endblock %}">
+                    <a href="{% url 'AdminThird:batch_send' %}">批量推送</a>
+                </li>
+              </ul>
+            </li>
+            <li class="nav-item nav-item-has-subnav {% block activity_address_management_active %}{% endblock %}">
+                  <a href="javascript:void(0)"><i class="mdi mdi-map-marker-plus"></i> 活动地址管理</a>
+                  <ul class="nav nav-subnav">
+                    <li class="{% block group_management_active %}{% endblock %}">
+                        <a href="{% url 'AdminThird:group_management' %}">组管理</a>
+                    </li>
+                  </ul>
+            </li>
+            <li class="nav-item {% block generate_qrcode_active %}{% endblock %}"> <a href="{% url 'AdminThird:generate_qrcode' %}"><i class="mdi mdi-qrcode"></i> 活动二维码</a> </li>
+          </ul>
+        </nav>
+
+        <div class="sidebar-footer">
+          <p class="copyright">Copyright &copy; 2021. 礼县邮政 All rights reserved.</p>
+        </div>
+      </div>
+
+    </aside>
+    <!--End 左侧导航-->
+
+    <!--头部信息-->
+    <header class="lyear-layout-header">
+
+      <nav class="navbar navbar-default">
+        <div class="topbar">
+
+          <div class="topbar-left">
+            <div class="lyear-aside-toggler">
+              <span class="lyear-toggler-bar"></span>
+              <span class="lyear-toggler-bar"></span>
+              <span class="lyear-toggler-bar"></span>
+            </div>
+            <span class="navbar-page-title"> {% block page_title %}{% endblock %} </span>
+          </div>
+
+          <ul class="topbar-right">
+            <li class="dropdown dropdown-profile">
+              <a href="javascript:void(0)" data-toggle="dropdown">
+                <span>{{ name }} <span class="caret"></span></span>
+              </a>
+              <ul class="dropdown-menu dropdown-menu-right">
+                <li> <a href="{% url 'AdminThird:profile' %}"><i class="mdi mdi-account"></i> 个人信息</a> </li>
+                <li> <a href="{% url 'AdminThird:change_password' %}"><i class="mdi mdi-lock-outline"></i> 修改密码</a> </li>
+                <li class="divider"></li>
+                <li> <a href="{% url 'AdminThird:logout' %}"><i class="mdi mdi-logout-variant"></i> 退出登录</a> </li>
+              </ul>
+            </li>
+          </ul>
+        </div>
+      </nav>
+
+    </header>
+    <!--End 头部信息-->
+
+    <!--页面主要内容-->
+    <main class="lyear-layout-content">
+        {% block main_content %}
+        {% endblock %}
+
+        {% block modal_content %}
+        {% endblock %}
+    </main>
+    <!--End 页面主要内容-->
+  </div>
+</div>
+
+<script type="text/javascript" src="{% static 'AdminThird/js/jquery.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'AdminThird/js/bootstrap.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'AdminThird/js/perfect-scrollbar.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'AdminThird/js/main.min.js' %}"></script>
+
+{% block js_content %}
+{% endblock %}
+</body>
+</html>

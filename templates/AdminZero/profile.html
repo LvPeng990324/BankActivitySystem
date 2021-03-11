@@ -1,0 +1,30 @@
+{% extends 'AdminZero/base.html' %}
+{% load static %}
+
+{% block title %}个人信息{% endblock %}
+{% block page_title %}个人信息{% endblock %}
+
+{% block main_content %}
+<div class="container-fluid">
+    <div class="row">
+      <div class="col-lg-12">
+        <div class="card">
+          <div class="card-body">
+            <hr>
+            <form method="post" action="{% url 'AdminZero:profile' %}" class="site-form">
+              <div class="form-group">
+                <label for="id_name">姓名</label>
+                <input type="text" class="form-control" name="name" id="id_name" value="{{ name }}" disabled>
+              </div>
+              <div class="form-group">
+                <label for="id_job_num">工号</label>
+                <input type="text" class="form-control" name="job_num" id="id_job_num" value="{{ job_num }}" disabled>
+              </div>
+              <button type="submit" class="btn btn-primary" disabled>保存</button>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+</div>
+{% endblock %}

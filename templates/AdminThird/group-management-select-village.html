@@ -1,0 +1,79 @@
+{% extends 'AdminThird/base.html' %}
+{% load static %}
+
+{% block title %}组管理{% endblock %}
+{% block page_title %}组管理{% endblock %}
+{% block activity_address_management_active %}active open{% endblock %}
+{% block group_management_active %}active{% endblock %}
+
+{% block main_content %}
+<div class="container-fluid">
+    {% if success_message %}
+      <div class="alert alert-success alert-dismissible" role="alert">
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+          <strong>成功</strong> {{ success_message }}
+      </div>
+    {% elif error_message %}
+      <div class="alert alert-danger alert-dismissible" role="alert">
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+          <strong>失败</strong> {{ error_message }}
+      </div>
+    {% endif %}
+    <div class="row">
+      <div class="col-lg-12">
+        <div class="card">
+          <div class="card-toolbar clearfix">
+            <!-- 原搜索表单 -->
+            <div class="toolbar-btn-action">
+              <!-- 原新增按钮 -->
+            </div>
+          </div>
+          <div class="card-body">
+            <h3>选择要管理的村子</h3>
+            <form method="get" action="{% url 'AdminThird:group_management' %}">
+                <div class="form-group">
+                    <div class="form-group">
+                        <select class="form-control" id="id_town" name="town" required>
+                            <option value="" disabled>---选择镇子---</option>
+                            {% for town in towns %}
+                            <option value="{{ town.name }}">{{ town.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <select class="form-control" id="id_village" name="village" required>
+                            <option value="">---选择村子---</option>
+                        </select>
+                    </div>
+                </div>
+                <div>
+                    <button class="btn btn-info" type="submit">进入管理</button>
+                </div>
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+</div>
+{% endblock %}
+
+
+{% block js_content %}
+<!-- 根据镇子选项填充村子 -->
+<script>
+    $(function(){
+      $("#id_town").change(function(){
+        $.getJSON('{% url 'Address:village_information' %}',{town: $(this).val()}, function(json, TextStatus){
+            //先清空
+            $("#id_village").empty();
+            var options = '';
+            for (var i = 0; i < json.length; i++) {
+                options += '<option value="' + json[i]['name'] + '">' + json[i]['name'] + '</option>';
+                //alert(options);
+            }
+            $("#id_village").prepend(options);
+        })
+      })
+    })
+</script>
+{% endblock %}

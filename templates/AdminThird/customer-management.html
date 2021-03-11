@@ -1,0 +1,551 @@
+{% extends 'AdminThird/base.html' %}
+{% load static %}
+
+{% block title %}客户管理-{{ town }}-{{ village }}-{{ group }}{% endblock %}
+{% block page_title %}客户管理-{{ town }}-{{ village }}-{{ group }}{% endblock %}
+{% block customer_management_active %}active{% endblock %}
+
+{% block main_content %}
+<div class="container-fluid">
+    {% if success_message %}
+      <div class="alert alert-success alert-dismissible" role="alert">
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+          <strong>成功</strong> {{ success_message }}
+      </div>
+    {% elif error_message %}
+      <div class="alert alert-danger alert-dismissible" role="alert">
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+          <strong>失败</strong> {{ error_message }}
+      </div>
+    {% endif %}
+    <div class="row">
+      <div class="col-lg-12">
+        <div class="card">
+          <div class="card-toolbar clearfix">
+            <form class="pull-right search-bar" method="get" action="{% url 'AdminThird:customer_management' %}" role="form">
+              <div class="input-group">
+                <input name="town" value="{{ town }}" hidden>
+                <input name="village" value="{{ village }}" hidden>
+                <input name="group" value="{{ group }}" hidden>
+                <input type="text" class="form-control" name="filter_keyword" value="{{ filter_keyword }}" placeholder="模糊搜索">
+                <span class="input-group-btn">
+                  <button class="btn btn-default" type="submit">搜索</button>
+                </span>
+              </div>
+
+            </form>
+            <div class="toolbar-btn-action">
+              <a data-toggle="modal" data-target="#add" class="btn btn-primary m-r-5"><i class="mdi mdi-plus"></i> 新增</a>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table table-bordered table-hover">
+                <thead>
+                  <tr>
+                    <th>姓名</th>
+                    <th>标签</th>
+                    <th>性别</th>
+                    <th>手机号</th>
+                    <th>地址</th>
+                    <th>参与活动</th>
+                    <th>报名时间</th>
+                    <th>操作</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for activity_record in activity_records %}
+                  <tr>
+                    <td>{{ activity_record.customer.name }}</td>
+                    <td>
+                        {% if activity_record.customer.is_vip %}
+                        <span class="label label-danger">会员</span>
+                        {% else %}
+                        <span class="label label-secondary">非会员</span>
+                        {% endif %}
+                        <span class="label label-{{ activity_record.customer.tag_type }}">
+                            {{ activity_record.customer.tag }}
+                        </span>
+                    </td>
+                    <td>{{ activity_record.customer.gender }}</td>
+                    <td>{{ activity_record.customer.phone }}</td>
+                    <td><small>{{ activity_record.customer.town }}-{{ activity_record.customer.village }}-{{ activity_record.customer.group }}-{{ activity_record.customer.street }}</small></td>
+                    <td>{{ activity_record.activity.name }}</td>
+                    <td>{{ activity_record.create_time }}</td>
+                    <td nowrap="norap">
+                      <div class="btn-group-justified">
+                        <a data-toggle="modal" data-target="#change" class="btn btn-xs btn-default" title="编辑"
+                        onclick="give_change_modal('{{ activity_record.customer.id }}', '{{ activity_record.customer.name }}', '{{ activity_record.customer.gender }}',
+                                '{{ activity_record.customer.phone }}', '{{ activity_record.customer.town }}',
+                                '{{ activity_record.customer.village }}', '{{ activity_record.customer.group }}',
+                                '{{ activity_record.customer.street }}')">
+                            <i class="mdi mdi-pencil"></i>
+                        </a>
+                        <a data-toggle="modal" data-target="#change_tag" class="btn btn-xs btn-default" title="修改标签"
+                        onclick="give_change_tag_modal(
+                            '{{ activity_record.customer.id }}',
+                                '{{ activity_record.customer.tag }}',
+                                '{{ activity_record.customer.tag_type }}'
+                        )">
+                            <i class="mdi mdi-tag"></i>
+                        </a>
+                        <a data-toggle="modal" data-target="#comment" class="btn btn-xs btn-default" title="备注"
+                        onclick="give_comment_modal('{{ activity_record.customer.id }}')">
+                            <i class="mdi mdi-comment-text"></i>
+                        </a>
+                        <a data-toggle="modal" data-target="#send_notice" class="btn btn-xs btn-default" title="推送通知"
+                        onclick="give_send_notice_modal('{{ activity_record.customer.id }}')">
+                            <i class="mdi mdi-message-alert"></i>
+                        </a>
+                        <a data-toggle="modal" data-target="#del" class="btn btn-xs btn-default" href="#!" title="删除"
+                        onclick="give_del_modal('{{ activity_record.id }}')">
+                            <i class="mdi mdi-window-close"></i>
+                        </a>
+                      </div>
+                    </td>
+                  </tr>
+                  {% endfor %}
+
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block modal_content %}
+<!-- 新增客户 -->
+<div class="modal fade" id="add" tabindex="-1" role="dialog" aria-labelledby="delModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form action="{% url 'AdminThird:customer_management' %}" method="post"
+                  enctype="multipart/form-data">
+                {% csrf_token %}
+                <input name="action" value="add" hidden>
+                <input name="town" value="{{ town }}" hidden>
+                <input name="village" value="{{ village }}" hidden>
+                <input name="group" value="{{ group }}" hidden>
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="delModalLabel">新增客户</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="id_name" class="control-label">姓名：</label>
+                        <input class="form-control m-b-10" type="text" id="id_name" name="name"  required>
+                    </div>
+                    <div>
+                        <label for="id_gender" class="control-label">性别</label>
+                        <select class="form-control" id="id_gender" name="gender" required>
+                            <option value="男">男</option>
+                            <option value="女">女</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="id_phone" class="control-label">手机号：</label>
+                        <input class="form-control m-b-10" type="text" id="id_phone" name="phone"  required>
+                    </div>
+                    <div class="form-group">
+                        <label for="id_address" class="control-label">地址：</label>
+                        <div class="form-group">
+                            <select class="form-control" id="id_town_add" name="town_add" required>
+                                <option value="" disabled>---选择镇子---</option>
+                                {% for town in towns %}
+                                <option value="{{ town.name }}">{{ town.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <select class="form-control" id="id_village_add" name="village_add" required>
+                                <option value="" disabled>---选择村子---</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <select class="form-control" id="id_group_add" name="group_add" required>
+                                <option value="" disabled>---选择组---</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <input class="form-control m-b-10" type="text" id="id_street_add" name="street_add">
+                        </div>
+                    </div>
+                    <div>
+                        <label for="id_activity" class="control-label">参加活动</label>
+                        <select class="form-control" id="id_activity" name="activity" required>
+                            <option value="" disabled>--选择此客户参加的活动--</option>
+                            {% for activity in activities %}
+                            <option value="{{ activity.id }}">{{ activity.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                    <button type="submit" class="btn btn-success">增加</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- 修改客户 -->
+<div class="modal fade" id="change" tabindex="-1" role="dialog" aria-labelledby="delModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form action="{% url 'AdminThird:customer_management' %}" method="post"
+                  enctype="multipart/form-data">
+                {% csrf_token %}
+                <input name="action" value="change" hidden>
+                <input id="id_change_id" name="change_id" hidden>
+                <input name="town" value="{{ town }}" hidden>
+                <input name="village" value="{{ village }}" hidden>
+                <input name="group" value="{{ group }}" hidden>
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="delModalLabel">修改客户</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="id_change_name" class="control-label">姓名：</label>
+                        <input class="form-control m-b-10" type="text" id="id_change_name" name="change_name"  required>
+                    </div>
+                    <div>
+                        <label for="id_change_gender" class="control-label">性别</label>
+                        <select class="form-control" id="id_change_gender" name="change_gender" required>
+                            <option value="男">男</option>
+                            <option value="女">女</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="id_change_phone" class="control-label">手机号：</label>
+                        <input class="form-control m-b-10" type="text" id="id_change_phone" name="change_phone"  required>
+                    </div>
+                    <div class="form-group">
+                        <label for="id_address" class="control-label">地址：</label>
+                        <div class="form-group">
+                            <select class="form-control" id="id_town_change" name="change_town" required>
+                                <option value="" disabled>---选择镇子---</option>
+                                {% for town in towns %}
+                                <option value="{{ town.name }}">{{ town.name }}</option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <select class="form-control" id="id_village_change" name="change_village" required>
+                                <option value="" disabled>---选择村子---</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <select class="form-control" id="id_group_change" name="change_group" required>
+                                <option value="" disabled>---选择组---</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <input class="form-control m-b-10" type="text" id="id_street_change" name="change_street"  required>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                    <button type="submit" class="btn btn-info">修改</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- 删除客户 -->
+<div class="modal fade" id="del" tabindex="-1" role="dialog" aria-labelledby="delModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form action="{% url 'AdminThird:customer_management' %}" method="post"
+                  enctype="multipart/form-data">
+                {% csrf_token %}
+                <input name="action" value="del" hidden>
+                <input id="id_del_id" name="del_id" hidden>
+                <input name="town" value="{{ town }}" hidden>
+                <input name="village" value="{{ village }}" hidden>
+                <input name="group" value="{{ group }}" hidden>
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="delModalLabel">删除客户</h4>
+                </div>
+                <div class="modal-body">
+                    <p style="color: red">删除记录后将无法恢复，确定吗</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                    <button type="submit" class="btn btn-danger">删除</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- 修改客户标签 -->
+<div class="modal fade" id="change_tag" tabindex="-1" role="dialog" aria-labelledby="delModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form action="{% url 'AdminThird:customer_management' %}" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <input name="action" value="change_tag" hidden>
+                <input id="id_change_tag_id" name="change_id" hidden>
+                <input name="town" value="{{ town }}" hidden>
+                <input name="village" value="{{ village }}" hidden>
+                <input name="group" value="{{ group }}" hidden>
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="delModalLabel">修改客户标签</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="id_change_tag" class="control-label">客户标签：</label>
+                        <input class="form-control m-b-10" type="text" id="id_change_tag"
+                               name="change_tag"  required>
+                        <label for="id_change_tag_type" class="control-label">标签类型：</label>
+                        <select class="form-control" id="id_change_tag_type" name="change_tag_type">
+                            <option value="secondary">灰</option>
+                            <option value="dark">黑</option>
+                            <option value="success">绿</option>
+                            <option value="info">蓝</option>
+                            <option value="danger">红</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                    <button type="submit" class="btn btn-info">修改</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- 推送通知 -->
+<div class="modal fade" id="send_notice" tabindex="-1" role="dialog" aria-labelledby="delModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form action="{% url 'AdminThird:customer_management' %}" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <input name="action" value="send_notice" hidden>
+                <input id="id_send_customer_id" name="send_customer_id" hidden>
+                <input name="town" value="{{ town }}" hidden>
+                <input name="village" value="{{ village }}" hidden>
+                <input name="group" value="{{ group }}" hidden>
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="delModalLabel">推送通知</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="id_notice_id" class="control-label">要推送的通知：</label>
+                        <select class="form-control" id="id_notice_id" name="notice_id">
+                            {% for notice_template in notice_templates %}
+                            <option value="{{ notice_template.id }}">{{ notice_template.title }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <p class="form-control">
+                            <input type="checkbox" id="id_need_msg" name="need_msg">
+                            <label for="id_need_msg">需要短信提醒</label>
+                        </p>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                    <button type="submit" class="btn btn-info">推送</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- 查看/修改备注 -->
+<div class="modal fade" id="comment" tabindex="-1" role="dialog" aria-labelledby="delModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form action="{% url 'AdminThird:customer_management' %}" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <input name="action" value="change_comment" hidden>
+                <input name="comment_customer_id" id="id_comment_customer_id" hidden>
+                <input name="town" value="{{ town }}" hidden>
+                <input name="village" value="{{ village }}" hidden>
+                <input name="group" value="{{ group }}" hidden>
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="delModalLabel">备注</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="id_customer_comment" class="control-label">备注内容：</label>
+                        <textarea id="id_customer_comment" name="customer_comment" class="form-control" rows="10"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <button type="submit" class="btn btn-info">保存</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block js_content %}
+<!-- 给修改数据模态框传值 -->
+<script type="text/javascript">
+    function give_change_modal(change_id,
+                               change_name,
+                               change_gender,
+                               change_phone,
+                               change_town,
+                               change_village,
+                               change_group,
+                               change_street,
+    ) {
+        $('#id_change_id').val(change_id);
+        $('#id_change_name').val(change_name);
+        $('#id_change_gender').val(change_gender);
+        $('#id_change_phone').val(change_phone);
+        // 填充镇子
+        let town_select = $('#id_town_change');
+        town_select.prepend('<option value="' + change_town + '">' + change_town + '</option>');
+        town_select.val(change_town);
+        // 填充村子
+        let village_select = $('#id_village_change');
+        village_select.prepend('<option value="' + change_village + '">' + change_village + '</option>');
+        village_select.val(change_village);
+        // 填充组
+        let group_select = $('#id_group_change');
+        group_select.prepend('<option value="' + change_group + '">' + change_group + '</option>');
+        group_select.val(change_group);
+        // 填充街道
+        $('#id_street_change').val(change_street);
+    }
+</script>
+
+<!-- 给确认删除模态框传值 -->
+<script type="text/javascript">
+    function give_del_modal(del_id) {
+        $('#id_del_id').val(del_id);
+    }
+</script>
+
+<!-- 给修改标签模态框传值 -->
+<script type="text/javascript">
+    function give_change_tag_modal(
+        change_id,
+        change_tag,
+        change_tag_type
+    ) {
+        $('#id_change_tag_id').val(change_id);
+        $('#id_change_tag').val(change_tag);
+        $('#id_change_tag_type').val(change_tag_type);
+    }
+</script>
+
+<!-- 给备注模态框传值 -->
+<script type="text/javascript">
+    function give_comment_modal(comment_customer_id) {
+        // 给记录客户id的input传值
+        $('#id_comment_customer_id').val(comment_customer_id);
+        $.getJSON('{% url 'Customer:get_customer_comment' %}', {customer_id: comment_customer_id}, function (json, TextStatus) {
+            // 渲染到textarea框中
+            $('#id_customer_comment').html(json['comment']);
+        });
+    }
+</script>
+
+<!-- 给推送通知模态框传值 -->
+<script type="text/javascript">
+    function give_send_notice_modal(send_customer_id) {
+        $('#id_send_customer_id').val(send_customer_id);
+    }
+</script>
+
+<!-- 增加模态框根据镇子选项填充村子 -->
+<script>
+    $(function(){
+      $("#id_town_add").change(function(){
+        $.getJSON('{% url 'Address:village_information' %}',{town: $(this).val()}, function(json, TextStatus){
+            //先清空
+            let select_obj = $("#id_village_add").empty();
+            var options = '';
+            options += '<option value="" disabled>---选择村子---</option>';
+            for (var i = 0; i < json.length; i++) {
+                options += '<option value="' + json[i]['name'] + '">' + json[i]['name'] + '</option>';
+                //alert(options);
+            }
+            select_obj.prepend(options);
+        })
+      })
+    })
+</script>
+
+<!-- 增加模态框根据村子选项填充组 -->
+<script>
+    $(function(){
+      $("#id_village_add").change(function(){
+        $.getJSON('{% url 'Address:group_information' %}',{village: $(this).val()}, function(json, TextStatus){
+            //先清空
+            let select_obj = $("#id_group_add").empty();
+            var options = '';
+            options += '<option value="" disabled>---选择组---</option>';
+            for (var i = 0; i < json.length; i++) {
+                options += '<option value="' + json[i]['name'] + '">' + json[i]['name'] + '</option>';
+                //alert(options);
+            }
+            select_obj.prepend(options);
+        })
+      })
+    })
+</script>
+
+<!-- 修改模态框根据镇子选项填充村子 -->
+<script>
+    $(function(){
+      $("#id_town_change").change(function(){
+        $.getJSON('{% url 'Address:village_information' %}',{town: $(this).val()}, function(json, TextStatus){
+            //先清空
+            let select_obj = $("#id_village_change").empty();
+            var options = '';
+            options += '<option value="" disabled>---选择村子---</option>';
+            for (var i = 0; i < json.length; i++) {
+                options += '<option value="' + json[i]['name'] + '">' + json[i]['name'] + '</option>';
+                //alert(options);
+            }
+            select_obj.prepend(options);
+        })
+      })
+    })
+</script>
+
+<!-- 修改模态框根据村子选项填充组 -->
+<script>
+    $(function(){
+      $("#id_village_change").change(function(){
+        $.getJSON('{% url 'Address:group_information' %}',{village: $(this).val()}, function(json, TextStatus){
+            //先清空
+            let select_obj = $("#id_group_change").empty();
+            var options = '';
+            options += '<option value="" disabled>---选择组---</option>';
+            for (var i = 0; i < json.length; i++) {
+                options += '<option value="' + json[i]['name'] + '">' + json[i]['name'] + '</option>';
+                //alert(options);
+            }
+            select_obj.prepend(options);
+        })
+      })
+    })
+</script>
+{% endblock %}
