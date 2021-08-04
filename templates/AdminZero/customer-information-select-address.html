@@ -33,7 +33,7 @@
                 <div class="form-group">
                     <div class="form-group">
                         <select class="form-control" id="id_town" name="town" required>
-                            <option value="" disabled>---选择镇子---</option>
+                            <option value="所有镇子">---所有镇子---</option>
                             {% for town in towns %}
                             <option value="{{ town.name }}">{{ town.name }}</option>
                             {% endfor %}

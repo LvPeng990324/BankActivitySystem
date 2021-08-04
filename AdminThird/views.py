@@ -203,6 +203,9 @@ class CustomerManagement(View):
             }
             return render(request, 'AdminThird/customer-management-select-address.html', context=context)
 
+        # 如果是所有镇子，就重置为空字符串来实现筛选所有
+        if town == '所有镇子':
+            town = ''
         # 获取可能的筛选字段并筛选活动记录
         # 并且同时根据地址范围筛选
         filter_keyword = request.GET.get('filter_keyword', '')

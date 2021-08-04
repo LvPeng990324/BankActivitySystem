@@ -288,6 +288,9 @@ class CustomerInformation(View):
         # 取出此二级管理员下所有三级管理员
         admin_thirds = AdminThird.objects.filter(admin_second=admin)
 
+        # 如果是所有镇子，就重置为空字符串来实现筛选所有
+        if town == '所有镇子':
+            town = ''
         # 获取可能存在的筛选关键字
         filter_keyword = request.GET.get('filter_keyword', '')
         # 取出此二级管理员下所有三级管理员的所有客户参与信息，并按照创建时间逆序排序

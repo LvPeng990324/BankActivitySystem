@@ -567,6 +567,9 @@ class CustomerInformation(View):
             }
             return render(request, 'AdminZero/customer-information-select-address.html', context=context)
 
+        # 如果是所有镇子，就重置为空字符串来实现筛选所有
+        if town == '所有镇子':
+            town = ''
         # 获取可能存在的筛选关键字
         filter_keyword = request.GET.get('filter_keyword', '')
         # 筛选客户参与记录，并按照创建时间逆序排序
