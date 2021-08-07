@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     'AdminZero.apps.AdminzeroConfig',
     'Notice.apps.NoticeConfig',
     'Login.apps.LoginConfig',
+    'Merchandise.apps.MerchandiseConfig',
     'ckeditor',
     'ckeditor_uploader',
     'django_cleanup',
