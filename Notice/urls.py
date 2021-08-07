@@ -1,10 +1,9 @@
 from django.urls import path
 
-from . import views
-from . import apis
+from Notice.apis.get_notice_template import get_notice_template
 
 app_name = 'Notice'
 
 urlpatterns = [
-    path('get-notice-template/', apis.get_notice_template, name='get_notice_template'),
+    path('get-notice-template/', get_notice_template, name='get_notice_template'),
 ]

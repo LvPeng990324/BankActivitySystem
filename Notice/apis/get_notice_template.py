@@ -1,6 +1,6 @@
 from django.http import JsonResponse
 
-from .models import NoticeTemplate
+from Notice.models import NoticeTemplate
 
 
 def get_notice_template(request):

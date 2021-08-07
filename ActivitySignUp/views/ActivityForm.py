@@ -4,17 +4,13 @@ from django.views import View
 from django_redis import get_redis_connection
 from datetime import datetime
 
-from .models import Customer
-from .models import Activity
-from .models import ActivityRecord
+from Customer.models import Customer
+from ActivitySignUp.models import Activity
+from ActivitySignUp.models import ActivityRecord
 from AdminThird.models import AdminThird
 from Address.models import Town
 from Address.models import Village
 from Address.models import Group
-
-# from utils.GenerateValidCode import valid_code
-from utils.SendMessage import send_msg_code
-from utils.GetRandomCode import get_random_code
 
 
 class ActivityForm(View):
@@ -167,52 +163,3 @@ class ActivityForm(View):
         }
         return render(request, 'ActivityManagement/wait-to-customer-index.html', context=context)
 
-
-class ActivityInformation(View):
-    """ 活动信息类
-    """
-    def get(self, request):
-        # 获取要查询的活动id以及管理员工号
-        activity_id = request.GET.get('activity_id')
-        job_num = request.GET.get('job_num')
-        # 获取可能有的地址信息
-        town = request.GET.get('town', '')
-        village = request.GET.get('village', '')
-        group = request.GET.get('group', '')
-
-        # 查询活动信息
-        try:
-            activity = Activity.objects.get(id=activity_id)
-        except Activity.DoesNotExist:
-            # 不存在，返回不存在错误信息
-            return HttpResponse('<h1>活动不存在</h1>')
-
-        # 打包数据引导活动介绍页面
-        context = {
-            'activity_name': activity.name,
-            'content': activity.content,
-            'job_num': job_num,
-            'activity_id': activity_id,
-            'town': town,
-            'village': village,
-            'group': group,
-        }
-        return render(request, 'ActivityManagement/activity-information.html', context=context)
-
-
-def get_msg_code(request):
-    # 获取要发送的手机号
-    phone = request.GET.get('phone')
-    # 获取随机验证码
-    msg_code = get_random_code()
-    # 记录到redis中
-    redis_cli = get_redis_connection('msg_code')
-    redis_cli.setex(phone, 60*5, msg_code)  # 设置5分钟过期
-    # 发送短信
-    res = send_msg_code(phone, msg_code)
-    # 000000是官方的成功状态码
-    # 其他错误码去容联云开发文档查阅
-    if res.statusCode == '000000':
-        return HttpResponse('success')
-    else:
-        return HttpResponse('短信发送错误码：' + res.statusCode)
