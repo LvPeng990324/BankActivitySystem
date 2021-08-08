@@ -3,14 +3,18 @@ from django.shortcuts import render
 from django.shortcuts import redirect
 from django.views import View
 from BankActivitySystem.settings import DEPLOY_DOMAIN
+from django.utils.decorators import method_decorator
 
 from AdminSecond.models import AdminSecond
 from ActivitySignUp.models import Activity
+
+from utils.login_checker import admin_second_login_required
 
 
 class ActivityManagement(View):
     """ 活动管理
     """
+    @method_decorator(admin_second_login_required)
     def get(self, request):
         # 登录身份验证
         if request.session.get('who_login') != 'AdminSecond':
@@ -43,6 +47,7 @@ class ActivityManagement(View):
         }
         return render(request, 'AdminSecond/activity-management.html', context=context)
 
+    @method_decorator(admin_second_login_required)
     def post(self, request):
         # 获取动作并根据动作来执行相应的操作
         # del 删除活动

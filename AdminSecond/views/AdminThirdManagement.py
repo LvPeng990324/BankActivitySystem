@@ -3,24 +3,21 @@ from django.shortcuts import render
 from django.shortcuts import redirect
 from django.views import View
 from datetime import datetime
+from django.utils.decorators import method_decorator
 
 from AdminSecond.models import AdminSecond
 from ActivitySignUp.models import ActivityRecord
 from AdminThird.models import AdminThird
 
 from utils.GetMD5 import get_md5
+from utils.login_checker import admin_second_login_required
 
 
 class AdminThirdManagement(View):
     """ 三级管理员管理
     """
-
+    @method_decorator(admin_second_login_required)
     def get(self, request):
-        # 登录身份验证
-        if request.session.get('who_login') != 'AdminSecond':
-            request.session.flush()
-            return redirect('Login:admin_login')
-
         # 获取模糊搜索关键字
         filter_keyword = request.GET.get('filter_keyword', '')
 
@@ -62,6 +59,7 @@ class AdminThirdManagement(View):
         }
         return render(request, 'AdminSecond/admin-third-management.html', context=context)
 
+    @method_decorator(admin_second_login_required)
     def post(self, request):
         # 获取前端的动作
         # change_password 修改三级管理员密码

@@ -1,21 +1,19 @@
 from django.shortcuts import render
 from django.shortcuts import redirect
 from django.views import View
+from django.utils.decorators import method_decorator
 
 from Customer.models import Customer
 
 from utils.CheckCardNum import check_card_num
+from utils.login_checker import customer_login_required
 
 
 class BecomeVip(View):
     """ 成为会员
     """
+    @method_decorator(customer_login_required)
     def get(self, request):
-        # 检查登录状态
-        if not request.session.get('who_login') == 'Customer':
-            request.session.flush()
-            return redirect('Login:customer_login')
-
         # 取出此客户
         customer = Customer.objects.get(phone=request.session.get('customer_phone'))
 
@@ -36,6 +34,7 @@ class BecomeVip(View):
         }
         return render(request, 'Customer/become_vip.html', context=context)
 
+    @method_decorator(customer_login_required)
     def post(self, request):
         # 获取输入的卡号
         card_num = request.POST.get('card_num')

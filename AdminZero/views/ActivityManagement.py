@@ -2,21 +2,20 @@ from django.db.models import Q
 from django.shortcuts import render
 from django.shortcuts import redirect
 from django.views import View
+from django.utils.decorators import method_decorator
 
 from AdminZero.models import AdminZero
 from ActivitySignUp.models import Activity
 from BankActivitySystem.settings import DEPLOY_DOMAIN
 
+from utils.login_checker import admin_zero_login_required
+
 
 class ActivityManagement(View):
     """ 活动管理
     """
+    @method_decorator(admin_zero_login_required)
     def get(self, request):
-        # 登录身份验证
-        if request.session.get('who_login') != 'AdminZero':
-            request.session.flush()
-            return redirect('Login:admin_login')
-
         # 获取筛选关键字
         filter_keyword = request.GET.get('filter_keyword', '')
 
@@ -43,6 +42,7 @@ class ActivityManagement(View):
         }
         return render(request, 'AdminZero/activity-management.html', context=context)
 
+    @method_decorator(admin_zero_login_required)
     def post(self, request):
         # 获取动作并根据动作来执行相应的操作
         # del 删除活动

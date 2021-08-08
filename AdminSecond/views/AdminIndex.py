@@ -4,22 +4,20 @@ from django.shortcuts import redirect
 from django.views import View
 from datetime import datetime
 from datetime import timedelta
+from django.utils.decorators import method_decorator
 
 from AdminSecond.models import AdminSecond
 from ActivitySignUp.models import ActivityRecord
 from ActivitySignUp.models import Activity
 
+from utils.login_checker import admin_second_login_required
+
 
 class AdminIndex(View):
     """ 二级管理员首页
     """
-
+    @method_decorator(admin_second_login_required)
     def get(self, request):
-        # 登录身份验证
-        if request.session.get('who_login') != 'AdminSecond':
-            request.session.flush()
-            return redirect('Login:admin_login')
-
         # 获取此二级管理员对象
         admin = AdminSecond.objects.get(job_num=request.session.get('job_num'))
 

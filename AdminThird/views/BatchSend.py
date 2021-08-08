@@ -2,23 +2,21 @@ from django.db.models import Q
 from django.shortcuts import render
 from django.shortcuts import redirect
 from django.views import View
+from django.utils.decorators import method_decorator
 
 from AdminThird.models import AdminThird
 from ActivitySignUp.models import ActivityRecord
 from Notice.models import NoticeTemplate
 
 from utils.SendNotice import batch_send
+from utils.login_checker import admin_third_login_required
 
 
 class BatchSend(View):
     """ 批量推送
     """
+    @method_decorator(admin_third_login_required)
     def get(self, request):
-        # 登录身份验证
-        if request.session.get('who_login') != 'AdminThird':
-            request.session.flush()
-            return redirect('Login:admin_login')
-
         # 取出此三级管理员
         admin_third = AdminThird.objects.get(job_num=request.session.get('job_num'))
 
@@ -53,6 +51,7 @@ class BatchSend(View):
         }
         return render(request, 'AdminThird/batch-send.html', context=context)
 
+    @method_decorator(admin_third_login_required)
     def post(self, request):
         # 获取信息
         send_customer_ids = request.POST.get('send_customer_ids')

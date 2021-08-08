@@ -5,23 +5,21 @@ from django.shortcuts import redirect
 from django.views import View
 from datetime import datetime
 from BankActivitySystem.settings import DEPLOY_DOMAIN
+from django.utils.decorators import method_decorator
 
 from AdminThird.models import AdminThird
 from ActivitySignUp.models import Activity
 from Address.models import Town
 
 from utils.QRCode import get_qrcode_stream
+from utils.login_checker import admin_third_login_required
 
 
 class GenerateQRCode(View):
     """ 活动二维码
     """
+    @method_decorator(admin_third_login_required)
     def get(self, request):
-        # 登录身份验证
-        if request.session.get('who_login') != 'AdminThird':
-            request.session.flush()
-            return redirect('Login:admin_login')
-
         # 获取可能有的筛选字段并筛选活动信息
         filter_keyword = request.GET.get('filter_keyword', '')
         activities = Activity.objects.filter(
@@ -43,6 +41,7 @@ class GenerateQRCode(View):
         }
         return render(request, 'AdminThird/generate-qrcode.html', context=context)
 
+    @method_decorator(admin_third_login_required)
     def post(self, request):
         # 获取要生成二维码的活动id
         activity_id = request.POST.get('activity_id')

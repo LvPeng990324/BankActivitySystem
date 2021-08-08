@@ -4,21 +4,19 @@ from django.shortcuts import redirect
 from django.views import View
 from datetime import datetime
 from datetime import timedelta
+from django.utils.decorators import method_decorator
 
 from AdminZero.models import AdminZero
 from ActivitySignUp.models import ActivityRecord
 from ActivitySignUp.models import Activity
+from utils.login_checker import admin_zero_login_required
 
 
 class AdminIndex(View):
     """ 管理员首页
     """
+    @method_decorator(admin_zero_login_required)
     def get(self, request):
-        # 登录身份验证
-        if request.session.get('who_login') != 'AdminZero':
-            request.session.flush()
-            return redirect('Login:admin_login')
-
         # 取出此零级管理员
         admin_zero = AdminZero.objects.get(job_num=request.session.get('job_num'))
 

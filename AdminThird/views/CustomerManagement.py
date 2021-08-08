@@ -4,6 +4,7 @@ from django.shortcuts import redirect
 from django.shortcuts import reverse
 from django.views import View
 from datetime import datetime
+from django.utils.decorators import method_decorator
 
 from AdminThird.models import AdminThird
 from ActivitySignUp.models import Activity
@@ -14,17 +15,14 @@ from Address.models import Town
 
 from utils.SendNotice import send_one
 from utils.CheckExists import check_customer_phone_exists
+from utils.login_checker import admin_third_login_required
 
 
 class CustomerManagement(View):
     """ 客户管理
     """
+    @method_decorator(admin_third_login_required)
     def get(self, request):
-        # 登录身份验证
-        if request.session.get('who_login') != 'AdminThird':
-            request.session.flush()
-            return redirect('Login:admin_login')
-
         # 获取此三级管理员
         admin_third = AdminThird.objects.get(job_num=request.session.get('job_num'))
 
@@ -83,6 +81,7 @@ class CustomerManagement(View):
         }
         return render(request, 'AdminThird/customer-management.html', context=context)
 
+    @method_decorator(admin_third_login_required)
     def post(self, request):
         # 获取一开始的区域筛选信息
         town = request.POST.get('town')

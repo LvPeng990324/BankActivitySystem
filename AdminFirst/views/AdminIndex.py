@@ -1,24 +1,22 @@
 from django.db.models import Q
 from django.shortcuts import render
-from django.shortcuts import redirect
 from django .views import View
 from datetime import datetime
 from datetime import timedelta
+from django.utils.decorators import method_decorator
 
 from ActivitySignUp.models import ActivityRecord
 from ActivitySignUp.models import Activity
 from AdminFirst.models import AdminFirst
 
+from utils.login_checker import admin_first_login_required
+
 
 class AdminIndex(View):
     """ 管理员首页
     """
+    @method_decorator(admin_first_login_required)
     def get(self, request):
-        # 登录身份验证
-        if request.session.get('who_login') != 'AdminFirst':
-            request.session.flush()
-            return redirect('Login:admin_login')
-
         # 取出此一级管理员
         admin_first = AdminFirst.objects.get(job_num=request.session.get('job_num'))
 

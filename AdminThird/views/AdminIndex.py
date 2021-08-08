@@ -4,21 +4,20 @@ from django.shortcuts import redirect
 from django.views import View
 from datetime import datetime
 from datetime import timedelta
+from django.utils.decorators import method_decorator
 
 from AdminThird.models import AdminThird
 from ActivitySignUp.models import Activity
 from ActivitySignUp.models import ActivityRecord
 
+from utils.login_checker import admin_third_login_required
+
 
 class AdminIndex(View):
     """ 后台管理首页
     """
+    @method_decorator(admin_third_login_required)
     def get(self, request):
-        # 登录身份验证
-        if request.session.get('who_login') != 'AdminThird':
-            request.session.flush()
-            return redirect('Login:admin_login')
-
         # 获取页面信息
         admin = AdminThird.objects.get(job_num=request.session.get('job_num'))
         # 客户总数

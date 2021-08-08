@@ -3,16 +3,20 @@ from django.shortcuts import redirect
 from django.shortcuts import reverse
 from django.shortcuts import HttpResponseRedirect
 from django.views import View
+from django.utils.decorators import method_decorator
 
 from AdminThird.models import AdminThird
 from Address.models import Town
 from Address.models import Village
 from Address.models import Group
 
+from utils.login_checker import admin_third_login_required
+
 
 class GroupManagement(View):
     """ 组管理
     """
+    @method_decorator(admin_third_login_required)
     def get(self, request):
         # 登录身份验证
         if request.session.get('who_login') != 'AdminThird':
@@ -49,6 +53,7 @@ class GroupManagement(View):
         }
         return render(request, 'AdminThird/group-management.html', context=context)
 
+    @method_decorator(admin_third_login_required)
     def post(self, request):
         # 获取动作
         action = request.POST.get('action')

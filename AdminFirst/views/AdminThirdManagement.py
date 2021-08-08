@@ -3,6 +3,7 @@ from django.shortcuts import render
 from django.shortcuts import redirect
 from django .views import View
 from datetime import datetime
+from django.utils.decorators import method_decorator
 
 from AdminFirst.models import AdminFirst
 from AdminSecond.models import AdminSecond
@@ -11,17 +12,14 @@ from ActivitySignUp.models import ActivityRecord
 
 from utils.GetMD5 import get_md5
 from utils.CheckExists import check_job_num_exists
+from utils.login_checker import admin_first_login_required
 
 
 class AdminThirdManagement(View):
     """ 三级管理员管理
     """
+    @method_decorator(admin_first_login_required)
     def get(self, request):
-        # 登录身份验证
-        if request.session.get('who_login') != 'AdminFirst':
-            request.session.flush()
-            return redirect('Login:admin_login')
-
         # 取出此一级管理员对象
         admin_first = AdminFirst.objects.get(job_num=request.session.get('job_num'))
 
@@ -73,6 +71,7 @@ class AdminThirdManagement(View):
         }
         return render(request, 'AdminFirst/admin-third-management.html', context=context)
 
+    @method_decorator(admin_first_login_required)
     def post(self, request):
         # 获取action，并判断执行相应的操作
         # add 新增

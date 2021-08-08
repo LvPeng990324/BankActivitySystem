@@ -1,21 +1,19 @@
 from django.shortcuts import render
 from django.shortcuts import redirect
 from django.views import View
+from django.utils.decorators import method_decorator
 
 from AdminThird.models import AdminThird
 
 from utils.GetMD5 import get_md5
+from utils.login_checker import admin_third_login_required
 
 
 class ChangePassword(View):
     """ 修改密码
     """
+    @method_decorator(admin_third_login_required)
     def get(self, request):
-        # 登录身份验证
-        if request.session.get('who_login') != 'AdminThird':
-            request.session.flush()
-            return redirect('Login:admin_login')
-
         # 打包可能存在的错误/成功信息
         context = {
             'name': AdminThird.objects.get(job_num=request.session.get('job_num')).name,
@@ -24,6 +22,7 @@ class ChangePassword(View):
         }
         return render(request, 'AdminThird/change-password.html', context=context)
 
+    @method_decorator(admin_third_login_required)
     def post(self, request):
         # 从前端取得填写的旧密码以及两次新密码
         old_password = get_md5((request.POST.get('old_password')))

@@ -2,14 +2,18 @@ from django.db.models import Q
 from django.shortcuts import render
 from django.shortcuts import redirect
 from django.views import View
+from django.utils.decorators import method_decorator
 
 from AdminThird.models import AdminThird
 from Notice.models import NoticeTemplate
+
+from utils.login_checker import admin_third_login_required
 
 
 class NoticeView(View):
     """ 通知查看
     """
+    @method_decorator(admin_third_login_required)
     def get(self, request):
         # 验证登录身份
         if request.session.get('who_login') != 'AdminThird':

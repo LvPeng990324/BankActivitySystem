@@ -3,20 +3,19 @@ from django.shortcuts import redirect
 from django.db.models import Q
 from django.views import View
 from datetime import datetime
+from django.utils.decorators import method_decorator
 
 from Customer.models import Customer
 from ActivitySignUp.models import Activity
+
+from utils.login_checker import customer_login_required
 
 
 class ProgressingActivity(View):
     """ 进行中活动
     """
+    @method_decorator(customer_login_required)
     def get(self, request):
-        # 检查登录状态
-        if not request.session.get('who_login') == 'Customer':
-            request.session.flush()
-            return redirect('Login:customer_login')
-
         # 取出此客户
         customer = Customer.objects.get(phone=request.session.get('customer_phone'))
 
