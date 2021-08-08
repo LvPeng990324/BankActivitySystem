@@ -8,5 +8,6 @@ class MerchandiseInformation(admin.ModelAdmin):
     list_display = (
         'name',
         'remain_num',
+        'is_delete',
     )
 
