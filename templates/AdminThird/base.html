@@ -9,6 +9,7 @@
     <link href="{% static 'AdminThird/css/bootstrap.min.css' %}" rel="stylesheet">
     <link href="{% static 'AdminThird/css/materialdesignicons.min.css' %}" rel="stylesheet">
     <link href="{% static 'AdminThird/css/style.min.css' %}" rel="stylesheet">
+    <link href="{% static 'AdminThird/css/animate.css' %}" rel="stylesheet">
 
     {% block css_content %}
     {% endblock %}
@@ -111,6 +112,26 @@
 <script type="text/javascript" src="{% static 'AdminThird/js/bootstrap.min.js' %}"></script>
 <script type="text/javascript" src="{% static 'AdminThird/js/perfect-scrollbar.min.js' %}"></script>
 <script type="text/javascript" src="{% static 'AdminThird/js/main.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'AdminThird/js/bootstrap-notify.min.js' %}"></script>
+<script type="text/javascript" src="{% static 'AdminThird/js/lightyear.js' %}"></script>
+
+<!-- 消息提示框 -->
+{% if messages %}
+  {% for message in messages %}
+    {% if message.tags == 'success' %}
+    <script type="text/javascript">
+        lightyear.notify('{{ message }}', 'success', 3000);
+    </script>
+    {% elif message.tags == 'error' %}
+    <script type="text/javascript">
+        lightyear.notify('{{ message }}', 'danger', 3000);
+    </script>
+    {% endif %}
+  {% endfor %}
+{% endif %}
+
+{% block js_content %}
+{% endblock %}
 
 {% block js_content %}
 {% endblock %}

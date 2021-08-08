@@ -8,6 +8,7 @@
 <link href="{% static 'Login/css/bootstrap.min.css' %}" rel="stylesheet">
 <link href="{% static 'Login/css/materialdesignicons.min.css' %}" rel="stylesheet">
 <link href="{% static 'Login/css/style.min.css' %}" rel="stylesheet">
+<link href="{% static 'Login/css/animate.css' %}" rel="stylesheet">
 <style>
 .lyear-wrapper {
     position: relative;
@@ -138,6 +139,20 @@
 <script type="text/javascript" src="{% static 'Login/js/bootstrap.min.js' %}"></script>
 <script type="text/javascript" src="{% static 'Login/js/bootstrap-notify.min.js' %}"></script>
 <script type="text/javascript" src="{% static 'Login/js/lightyear.js' %}"></script>
+<!-- 消息提示框 -->
+{% if messages %}
+  {% for message in messages %}
+    {% if message.tags == 'success' %}
+    <script type="text/javascript">
+        lightyear.notify('{{ message }}', 'success', 3000);
+    </script>
+    {% elif message.tags == 'error' %}
+    <script type="text/javascript">
+        lightyear.notify('{{ message }}', 'danger', 3000);
+    </script>
+    {% endif %}
+  {% endfor %}
+{% endif %}
 <!-- 获取验证码按钮倒计时 -->
 <script>
     $('#get_msg_code').on('click', function () {
