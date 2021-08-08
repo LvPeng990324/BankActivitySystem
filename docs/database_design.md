@@ -94,3 +94,9 @@
 
 - name 组名
 - village 村名 --外键
+
+# Merchandise 商品
+
+- name 商品名
+- remain_num 库存量
+- description 介绍
