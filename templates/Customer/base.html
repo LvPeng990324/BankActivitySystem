@@ -61,7 +61,7 @@
           <ul class="topbar-right">
             <li class="dropdown dropdown-profile">
               <a href="javascript:void(0)" data-toggle="dropdown">
-                <span>{{ name }} <span class="caret"></span></span>
+                <span>{{ request.session.name }} <span class="caret"></span></span>
               </a>
               <ul class="dropdown-menu dropdown-menu-right">
                   <li> <a href="{% url 'Customer:become_vip' %}"><i class="mdi mdi-account-plus"></i> 成为会员</a> </li>

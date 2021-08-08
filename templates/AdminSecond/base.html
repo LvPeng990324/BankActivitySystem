@@ -64,7 +64,7 @@
           <ul class="topbar-right">
             <li class="dropdown dropdown-profile">
               <a href="javascript:void(0)" data-toggle="dropdown">
-                <span>{{ name }} <span class="caret"></span></span>
+                <span>{{ request.session.name }} <span class="caret"></span></span>
               </a>
               <ul class="dropdown-menu dropdown-menu-right">
                 <li> <a href="{% url 'AdminSecond:profile' %}"><i class="mdi mdi-account"></i> 个人信息</a> </li>

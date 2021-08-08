@@ -6,3 +6,4 @@
 - customer_phone 客户手机号
 - error_message 错误信息
 - success_message 成功信息
+- name 登陆者姓名

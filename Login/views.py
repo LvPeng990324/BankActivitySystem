@@ -108,6 +108,7 @@ class AdminLogin(View):
         # 记录登录成功
         request.session['is_login'] = True
         request.session['job_num'] = job_num
+        request.session['name'] = admin.name
         # 重定向登录页面
         return redirect('Login:admin_login')
 
@@ -142,7 +143,7 @@ class CustomerLogin(View):
         # 获取填写的手机号
         phone = request.POST.get('phone')
         # 看看用户记录里有没有这个手机号
-        # 没有的话就记录此手机号无记录错误
+        # 没有的话就记录此手机号无记录错误 TODO 优化这里的取客户动作，应该在这里取出后面共用
         if not Customer.objects.filter(phone=phone).exists():
             # 记录此手机号无记录错误
             request.session['error_message'] = '此手机号无记录'
@@ -191,6 +192,7 @@ class CustomerLogin(View):
         # 没问题了，记录登录信息
         request.session['who_login'] = 'Customer'
         request.session['customer_phone'] = phone
+        request.session['name'] = Customer.objects.get(phone=phone).name
 
         # 重定向客户登录页面，将会根据记录的登录信息自动跳转相应的页面
         return redirect('Login:customer_login')

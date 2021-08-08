@@ -62,6 +62,10 @@
                         )">
                             <i class="mdi mdi-pencil"></i>
                         </a>
+                        <a data-toggle="modal" data-target="#give_merchandise" class="btn btn-xs btn-default" title="发放"
+                        onclick="give_give_modal('{{ merchandise.id }}')">
+                            <i class="mdi mdi-account-check"></i>
+                        </a>
                         <a data-toggle="modal" data-target="#delete_merchandise" class="btn btn-xs btn-default" title="删除"
                         onclick="give_delete_modal('{{ merchandise.id }}')">
                             <i class="mdi mdi-window-close"></i>
@@ -150,6 +154,42 @@
   </div>
 </div>
 
+<!-- 发放商品模态框 -->
+<div class="modal fade" id="give_merchandise" tabindex="-1" role="dialog" aria-labelledby="delModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <form action="{% url 'AdminSecond:merchandise_management' %}" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input name="action" value="give_merchandise" hidden>
+        <input id="id_give_id" name="give_id" hidden>
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="delModalLabel">发放商品</h4>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="id_give_customer" class="control-label">发放客户：</label>
+            <select class="form-control" id="id_give_customer" name="give_customer" required>
+              <option value="">---选择要发放的客户---</option>
+              {% for customer in customers %}
+              <option value="{{ customer.id }}">{{ customer.name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="id_give_num" class="control-label">发放数量：</label>
+            <input class="form-control m-b-10" type="number" min="0" id="id_give_num" name="give_num" value="1" required>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+          <button type="submit" class="btn btn-info">发放</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
 <!-- 删除商品模态框 -->
 <div class="modal fade" id="delete_merchandise" tabindex="-1" role="dialog" aria-labelledby="delModalLabel">
   <div class="modal-dialog" role="document">
@@ -199,6 +239,11 @@ function give_change_modal(merchandise_id) {
 {# 给删除模态框赋值 #}
 function give_delete_modal(merchandise_id) {
     $('#id_delete_id').val(merchandise_id);
+}
+
+{# 给发放商品模态框赋值 #}
+function give_give_modal(merchandise_id) {
+    $('#id_give_id').val(merchandise_id);
 }
 </script>
 {% endblock %}
