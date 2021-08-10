@@ -4,6 +4,7 @@ from django.shortcuts import redirect
 from django.shortcuts import reverse
 from django.views import View
 from django.utils.decorators import method_decorator
+from django.contrib import messages
 
 from AdminSecond.models import AdminSecond
 from ActivitySignUp.models import ActivityRecord
@@ -69,6 +70,7 @@ class CustomerInformation(View):
             'town': town,
             'village': village,
             'group': group,
+            'admin_thirds': admin_thirds,
         }
         return render(request, 'AdminSecond/customer-information.html', context=context)
 
@@ -82,6 +84,7 @@ class CustomerInformation(View):
         # 根据action判断动作
         # change_tag 更改标签
         # change_comment 更改备注
+        # change_admin_third 更改客户经理
         action = request.POST.get('action')
         if action == 'change_tag':
             # 获取要更改的客户id以及要更改的信息
@@ -113,6 +116,39 @@ class CustomerInformation(View):
             request.session['success_message'] = '备注修改成功'
             return redirect(
                 reverse('AdminSecond:customer_information') + '?town={}&village={}&group={}'.format(town, village, group)
+            )
+        elif action == 'change_admin_third':
+            # 获取信息
+            change_admin_third_activity_record_id = request.POST.get('change_admin_third_activity_record_id')
+            change_admin_third_id = request.POST.get('change_admin_third')
+
+            # 取出客户
+            try:
+                change_activity_record = ActivityRecord.objects.get(id=change_admin_third_activity_record_id)
+            except Customer.DoesNotExist:
+                # 未取到该客户
+                messages.error(request, '未取到该客户')
+                return redirect('AdminSecond:customer_information')
+            # 取到该客户了
+
+            # 取出该三级管理员
+            try:
+                change_admin_third = AdminThird.objects.get(id=change_admin_third_id)
+            except AdminThird.DoesNotExist:
+                # 未取到该客户经理
+                messages.error(request, '未取到该客户经理')
+                return redirect('AdminSecond:customer_information')
+            # 取到该三级管理员了
+
+            # 更改三级管理员
+            change_activity_record.admin_third = change_admin_third
+            change_activity_record.save()
+
+            # 记录成功信息
+            messages.success(request, '更改成功')
+            return redirect(
+                reverse('AdminSecond:customer_information') + '?town={}&village={}&group={}'.format(town, village,
+                                                                                                    group)
             )
         else:
             # 未知错误，不明的操作
