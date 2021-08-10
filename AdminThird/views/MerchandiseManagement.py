@@ -18,7 +18,7 @@ class MerchandiseManagement(View):
     @method_decorator(admin_third_login_required)
     def get(self, request):
         # 获取筛选关键词
-        filter_word = request.GET.get('filter_word', '')
+        filter_keyword = request.GET.get('filter_keyword', '')
 
         # 取出所有未删除的商品
         merchandises = Merchandise.objects.filter(
@@ -26,9 +26,9 @@ class MerchandiseManagement(View):
         )
 
         # 如果有筛选关键词就筛选
-        if filter_word:
+        if filter_keyword:
             merchandises = merchandises.filter(
-                Q(name__icontains=filter_word)  # 筛选商品名
+                Q(name__icontains=filter_keyword)  # 筛选商品名
             )
 
         # 取出该三级管理员的客户们
@@ -37,7 +37,7 @@ class MerchandiseManagement(View):
         # 打包数据
         context = {
             'merchandises': merchandises,
-            'filter_word': filter_word,
+            'filter_keyword': filter_keyword,
             'customers': customers,
         }
         return render(request, 'AdminThird/merchandise-management.html', context=context)
