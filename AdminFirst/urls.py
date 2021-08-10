@@ -6,6 +6,7 @@ from AdminFirst.views.AdminSecondManagement import AdminSecondManagement
 from AdminFirst.views.AdminThirdManagement import AdminThirdManagement
 from AdminFirst.views.NoticeTemplateManagement import NoticeTemplateManagement
 from AdminFirst.views.ActivityManagement import ActivityManagement
+from AdminFirst.views.MerchandiseManagement import MerchandiseManagement
 
 from utils.LogOut import admin_logout
 
@@ -26,6 +27,8 @@ urlpatterns = [
     path('notice-template-management/', NoticeTemplateManagement.as_view(), name='notice_template_management'),
     # 活动管理
     path('activity-management/', ActivityManagement.as_view(), name='activity_management'),
+    # 商品管理
+    path('merchandise-management/', MerchandiseManagement.as_view(), name='merchandise_management'),
 
     # 登出
     path('logout/', admin_logout, name='admin_logout'),

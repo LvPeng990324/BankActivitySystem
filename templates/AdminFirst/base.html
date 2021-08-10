@@ -41,6 +41,7 @@
                     </li>
                   </ul>
               </li>
+              <li class="nav-item {% block merchandise_management_active %}{% endblock %}"> <a href="{% url 'AdminFirst:merchandise_management' %}"><i class="mdi mdi-truck"></i> 商品管理</a> </li>
               <li class="nav-item {% block notice_template_management_active %}{% endblock %}"> <a href="{% url 'AdminFirst:notice_template_management' %}"><i class="mdi mdi-message-text"></i> 客户通知模板管理</a> </li>
               <li class="nav-item {% block activity_management_active %}{% endblock %}"> <a href="{% url 'AdminFirst:activity_management' %}"><i class="mdi mdi-note-text"></i> 活动管理</a> </li>
           </ul>
