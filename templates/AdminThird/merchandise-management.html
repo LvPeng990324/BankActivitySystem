@@ -1,0 +1,250 @@
+{% extends 'AdminThird/base.html' %}
+{% load static %}
+
+{% block title %}商品管理{% endblock %}
+{% block page_title %}商品管理{% endblock %}
+{% block merchandise_management_active %}active{% endblock %}
+
+{% block main_content %}
+<div class="container-fluid">
+    {% if success_message %}
+      <div class="alert alert-success alert-dismissible" role="alert">
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+          <strong>成功</strong> {{ success_message }}
+      </div>
+    {% elif error_message %}
+      <div class="alert alert-danger alert-dismissible" role="alert">
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+          <strong>失败</strong> {{ error_message }}
+      </div>
+    {% endif %}
+    <div class="row">
+      <div class="col-lg-12">
+        <div class="card">
+          <div class="card-toolbar clearfix">
+            <form class="pull-right search-bar" method="get" action="{% url 'AdminThird:merchandise_management' %}" role="form">
+              <div class="input-group">
+                <input type="text" class="form-control" name="filter_keyword" value="{{ filter_keyword }}" placeholder="模糊搜索">
+                <span class="input-group-btn">
+                  <button class="btn btn-default" type="submit">搜索</button>
+                </span>
+              </div>
+
+            </form>
+            <div class="toolbar-btn-action">
+                <a data-toggle="modal" data-target="#add_merchandise" class="btn btn-primary m-r-5"><i class="mdi mdi-plus"></i> 新增</a>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table table-bordered table-hover">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>商品名</th>
+                    <th>库存量</th>
+                    <th>介绍</th>
+                    <th>操作</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for merchandise in merchandises %}
+                  <tr>
+                    <td>{{ merchandise.id }}</td>
+                    <td>{{ merchandise.name }}</td>
+                    <td>{{ merchandise.remain_num }}</td>
+                    <td>{{ merchandise.description }}</td>
+                    <td nowrap="norap">
+                      <div class="btn-group-justified">
+                        <a data-toggle="modal" data-target="#change_merchandise" class="btn btn-xs btn-default" title="修改"
+                        onclick="give_change_modal(
+                                '{{ merchandise.id }}',
+                        )">
+                            <i class="mdi mdi-pencil"></i>
+                        </a>
+                        <a data-toggle="modal" data-target="#give_merchandise" class="btn btn-xs btn-default" title="发放"
+                        onclick="give_give_modal('{{ merchandise.id }}')">
+                            <i class="mdi mdi-account-check"></i>
+                        </a>
+                        <a data-toggle="modal" data-target="#delete_merchandise" class="btn btn-xs btn-default" title="删除"
+                        onclick="give_delete_modal('{{ merchandise.id }}')">
+                            <i class="mdi mdi-window-close"></i>
+                        </a>
+                      </div>
+                    </td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block modal_content %}
+<!-- 新增商品模态框 -->
+<div class="modal fade" id="add_merchandise" tabindex="-1" role="dialog" aria-labelledby="delModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <form action="{% url 'AdminThird:merchandise_management' %}" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input name="action" value="add_merchandise" hidden>
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="delModalLabel">新增商品</h4>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="id_name" class="control-label">商品名：</label>
+            <input class="form-control m-b-10" type="text" id="id_name" name="name" required>
+          </div>
+          <div class="form-group">
+            <label for="id_remain_num" class="control-label">库存量：</label>
+            <input class="form-control m-b-10" type="number" min="0" id="id_remain_num" name="remain_num" required>
+          </div>
+          <div class="form-group">
+            <label for="id_description" class="control-label">介绍：</label>
+            <textarea id="id_description" name="description" class="form-control" rows="10" required></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+          <button type="submit" class="btn btn-success">新增</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- 修改商品模态框 -->
+<div class="modal fade" id="change_merchandise" tabindex="-1" role="dialog" aria-labelledby="delModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <form action="{% url 'AdminThird:merchandise_management' %}" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input name="action" value="change_merchandise" hidden>
+        <input id="id_change_id" name="change_id" hidden>
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="delModalLabel">修改商品</h4>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="id_change_name" class="control-label">商品名：</label>
+            <input class="form-control m-b-10" type="text" id="id_change_name" name="change_name" required>
+          </div>
+          <div class="form-group">
+            <label for="id_change_remain_num" class="control-label">库存量：</label>
+            <input class="form-control m-b-10" type="number" min="0" id="id_change_remain_num" name="change_remain_num" required>
+          </div>
+          <div class="form-group">
+            <label for="id_change_description" class="control-label">介绍：</label>
+            <textarea id="id_change_description" name="change_description" class="form-control" rows="10" required></textarea>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+          <button type="submit" class="btn btn-info">修改</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- 发放商品模态框 -->
+<div class="modal fade" id="give_merchandise" tabindex="-1" role="dialog" aria-labelledby="delModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <form action="{% url 'AdminThird:merchandise_management' %}" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input name="action" value="give_merchandise" hidden>
+        <input id="id_give_id" name="give_id" hidden>
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="delModalLabel">发放商品</h4>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label for="id_give_customer" class="control-label">发放客户：</label>
+            <select class="form-control" id="id_give_customer" name="give_customer" required>
+              <option value="">---选择要发放的客户---</option>
+              {% for customer in customers %}
+              <option value="{{ customer.id }}">{{ customer.name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="id_give_num" class="control-label">发放数量：</label>
+            <input class="form-control m-b-10" type="number" min="0" id="id_give_num" name="give_num" value="1" required>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+          <button type="submit" class="btn btn-info">发放</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- 删除商品模态框 -->
+<div class="modal fade" id="delete_merchandise" tabindex="-1" role="dialog" aria-labelledby="delModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <form action="{% url 'AdminThird:merchandise_management' %}" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input name="action" value="delete_merchandise" hidden>
+        <input id="id_delete_id" name="delete_id" hidden>
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="delModalLabel">删除商品</h4>
+        </div>
+        <div class="modal-body">
+          <p style="color: red;">删除后将不可恢复，确定吗</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+          <button type="submit" class="btn btn-danger">删除</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block js_content %}
+<script>
+{# 给修改信息模态框赋值 #}
+function give_change_modal(merchandise_id) {
+    $('#id_change_id').val(merchandise_id);
+    // 从接口拿数据
+    $.ajax({
+        type: "get",
+        url: "{% url 'Merchandise:get_merchandise_info' %}",
+        traditional: true,
+        data: {
+            'merchandise_id': merchandise_id,
+        },
+        success: function (arg) {
+            $('#id_change_name').val(arg.name);
+            $('#id_change_remain_num').val(arg.remain_num);
+            $('#id_change_description').val(arg.description);
+        }
+    })
+}
+
+{# 给删除模态框赋值 #}
+function give_delete_modal(merchandise_id) {
+    $('#id_delete_id').val(merchandise_id);
+}
+
+{# 给发放商品模态框赋值 #}
+function give_give_modal(merchandise_id) {
+    $('#id_give_id').val(merchandise_id);
+}
+</script>
+{% endblock %}
+
