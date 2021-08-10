@@ -1,0 +1,63 @@
+{% extends 'Customer/base.html' %}
+{% load static %}
+
+{% block title %}收到的礼物{% endblock %}
+{% block page_title %}收到的礼物{% endblock %}
+{% block received_merchandise_active %}active{% endblock %}
+
+{% block main_content %}
+<div class="container-fluid">
+    {% if success_message %}
+      <div class="alert alert-success alert-dismissible" role="alert">
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+          <strong>成功</strong> {{ success_message }}
+      </div>
+    {% elif error_message %}
+      <div class="alert alert-danger alert-dismissible" role="alert">
+          <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+          <strong>失败</strong> {{ error_message }}
+      </div>
+    {% endif %}
+    <div class="row">
+      <div class="col-lg-12">
+        <div class="card">
+          <div class="card-toolbar clearfix">
+{#            <div class="toolbar-btn-action">#}
+{#                <a data-toggle="modal" data-target="#add_merchandise" class="btn btn-primary m-r-5"><i class="mdi mdi-plus"></i> 新增</a>#}
+{#            </div>#}
+          </div>
+          <div class="card-body">
+            <div class="table-responsive">
+              <table class="table table-bordered table-hover">
+                <thead>
+                  <tr>
+                    <th>ID</th>
+                    <th>商品名</th>
+                    <th>发放人</th>
+                    <th>数量</th>
+                    <th>获取时间</th>
+                    <th>商品介绍</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for received_merchandise_record in received_merchandise_records %}
+                  <tr>
+                    <td>{{ received_merchandise_record.id }}</td>
+                    <td>{{ received_merchandise_record.merchandise.name }}</td>
+                    <td>{{ received_merchandise_record.give_admin_name }}</td>
+                    <td>{{ received_merchandise_record.give_num }}</td>
+                    <td>{{ received_merchandise_record.give_time }}</td>
+                    <td>{{ received_merchandise_record.merchandise.description }}</td>
+                  </tr>
+                  {% endfor %}
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+</div>
+{% endblock %}
+
+

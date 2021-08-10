@@ -6,6 +6,8 @@ from Customer.views.ProgressingActivity import ProgressingActivity
 from Customer.views.ActivityDetail import ActivityDetail
 from Customer.views.BecomeVip import BecomeVip
 from Customer.views.ChangePassword import ChangePassword
+from Customer.views.ReceivedMerchandise import ReceivedMerchandise
+
 from Customer.apis.get_customer_comments import get_customer_comments
 
 from utils.LogOut import customer_logout
@@ -27,6 +29,8 @@ urlpatterns = [
     path('become-vip/', BecomeVip.as_view(), name='become_vip'),
     # 更改密码
     path('change-password/', ChangePassword.as_view(), name='change_password'),
+    # 收到的礼品
+    path('received-merchandise/', ReceivedMerchandise.as_view(), name='received_merchandise'),
 
     # 获取客户备注接口
     path('get-customer-comment/', get_customer_comments, name='get_customer_comment'),
