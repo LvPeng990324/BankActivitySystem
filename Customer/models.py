@@ -30,6 +30,10 @@ class Customer(models.Model):
     card_num = models.CharField(max_length=20, default='', verbose_name='邮政卡卡号')
     password = models.CharField(max_length=100, default='', verbose_name='密码')
     comment = models.TextField(default='', verbose_name='备注')
+    is_merchant = models.BooleanField(null=True, blank=True, verbose_name='是否为商户', help_text='是否为商户')
+    is_installed_micro_post_pay = models.BooleanField(null=True, blank=True, verbose_name='是否安装微邮付', help_text='是否安装微邮付')
+    is_catering_merchant = models.BooleanField(null=True, blank=True, verbose_name='是否为餐饮商户', help_text='是否为餐饮商户')
+    salt_delivery = models.CharField(null=True, blank=True, max_length=100, verbose_name='食盐配送', help_text='食盐配送')
 
     class Meta:
         verbose_name_plural = '客户'

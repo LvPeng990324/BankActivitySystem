@@ -80,6 +80,7 @@ class CustomerInformation(View):
         # 根据action判断动作
         # change_tag 更改标签
         # change_comment 更改备注
+        # merchant_comment 商户备注
         # change_admin_third 更改客户经理
         action = request.POST.get('action')
         if action == 'change_tag':
@@ -113,6 +114,43 @@ class CustomerInformation(View):
             return redirect(
                 reverse('AdminZero:customer_information') + '?town={}&village={}&group={}'.format(town, village, group)
             )
+        elif action == 'merchant_comment':
+            # 获取信息
+            customer_id = request.POST.get('merchant_comment_customer_id')
+            is_merchant = request.POST.get('is_merchant')
+            is_installed_micro_post_pay = request.POST.get('is_installed_micro_post_pay')
+            is_catering_merchant = request.POST.get('is_catering_merchant')
+            salt_delivery = request.POST.get('salt_delivery')
+            # 转换布尔值数据
+            boolean_data_converter = {'0': False, '1': True, None: None}
+            is_merchant = boolean_data_converter.get(is_merchant)
+            is_installed_micro_post_pay = boolean_data_converter.get(is_installed_micro_post_pay)
+            is_catering_merchant = boolean_data_converter.get(is_catering_merchant)
+
+            # 取出该客户
+            try:
+                customer = Customer.objects.get(id=customer_id)
+            except Customer.DoesNotExist:
+                # 未取到该客户
+                messages.error(request, '未取到该客户')
+                return redirect('AdminZero:customer_information')
+            # 取到该客户了
+
+            # 更新信息
+            customer.is_merchant = is_merchant
+            customer.is_installed_micro_post_pay = is_installed_micro_post_pay
+            customer.is_catering_merchant = is_catering_merchant
+            customer.salt_delivery = salt_delivery
+            customer.save()
+
+            # 记录成功信息
+            messages.success(request, '更改成功')
+            return redirect(
+                reverse('AdminZero:customer_information') + '?town={}&village={}&group={}'.format(town, village,
+                                                                                                  group)
+            )
+
+
         elif action == 'change_admin_third':
             # 获取信息
             change_admin_third_activity_record_id = request.POST.get('change_admin_third_activity_record_id')

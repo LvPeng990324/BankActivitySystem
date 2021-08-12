@@ -85,6 +85,16 @@
                         onclick="give_comment_modal('{{ activity_record.customer.id }}')">
                             <i class="mdi mdi-comment-text"></i>
                         </a>
+                        <a data-toggle="modal" data-target="#merchant_comment" class="btn btn-xs btn-default" title="商户备注"
+                        onclick="give_merchant_comment_modal(
+                            '{{ activity_record.customer.id }}',
+                            '{{ activity_record.customer.is_merchant|default_if_none:'' }}',
+                            '{{ activity_record.customer.is_installed_micro_post_pay|default_if_none:'' }}',
+                            '{{ activity_record.customer.is_catering_merchant|default_if_none:'' }}',
+                            '{{ activity_record.customer.salt_delivery|default_if_none:'' }}',
+                        )">
+                            <i class="mdi mdi-store"></i>
+                        </a>
                         <a data-toggle="modal" data-target="#change_admin_third" class="btn btn-xs btn-default" title="更改客户经理"
                         onclick="give_change_admin_third_modal('{{ activity_record.id }}', '{{ activity_record.admin_third_id }}')">
                             <i class="mdi mdi-account-convert"></i>
@@ -175,6 +185,64 @@
     </div>
 </div>
 
+<!-- 商户备注 -->
+<div class="modal fade" id="merchant_comment" tabindex="-1" role="dialog" aria-labelledby="delModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form action="{% url 'AdminZero:customer_information' %}" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <input name="action" value="merchant_comment" hidden>
+                <input name="merchant_comment_customer_id" id="id_merchant_comment_customer_id" hidden>
+                <input name="town" value="{{ town }}" hidden>
+                <input name="village" value="{{ village }}" hidden>
+                <input name="group" value="{{ group }}" hidden>
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="delModalLabel">商户备注</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="id_is_merchant" class="control-label">是否为商户：</label>
+                        <select class="form-control" id="id_is_merchant" name="is_merchant" required>
+                          <option value="">---选择是否为商户---</option>
+                          <option value="1">是</option>
+                          <option value="0">否</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="id_is_installed_micro_post_pay" class="control-label">是否安装微邮付：</label>
+                        <select class="form-control" id="id_is_installed_micro_post_pay" name="is_installed_micro_post_pay">
+                          <option value="">---选择是否安装微邮付---</option>
+                          <option value="1">是</option>
+                          <option value="0">否</option>
+                        </select>
+                    </div><div class="form-group">
+                        <label for="id_is_catering_merchant" class="control-label">是否为餐饮商户：</label>
+                        <select class="form-control" id="id_is_catering_merchant" name="is_catering_merchant">
+                          <option value="">---选择是否为餐饮商户---</option>
+                          <option value="1">是</option>
+                          <option value="0">否</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="id_salt_delivery" class="control-label">食盐配送：</label>
+                        <select class="form-control" id="id_salt_delivery" name="salt_delivery">
+                          <option value="">---选择食盐配送时间段---</option>
+                          <option value="1-5号">1-5号</option>
+                          <option value="20-25号">20-25号</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <button type="submit" class="btn btn-info">保存</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <!-- 修改三级管理员 -->
 <div class="modal fade" id="change_admin_third" tabindex="-1" role="dialog" aria-labelledby="delModalLabel">
     <div class="modal-dialog" role="document">
@@ -244,5 +312,103 @@
         $('#id_change_admin_third_activity_record_id').val(activity_record_id);
         $('#id_change_admin_third').val(admin_third_id);
     }
+</script>
+
+<!-- 给商户备注模态框传值 -->
+<script type="text/javascript">
+{# 禁用是否安装微邮付 #}
+function disable_is_installed_micro_post_pay() {
+    $('#id_is_installed_micro_post_pay').prop('disabled', true).prop('required', false).val('');
+}
+{# 启用是否安装微邮付 #}
+function enable_is_installed_micro_post_pay() {
+    $('#id_is_installed_micro_post_pay').prop('disabled', false).prop('required', true);
+}
+{# 禁用是否为餐饮商户 #}
+function disable_is_catering_merchant() {
+    $('#id_is_catering_merchant').prop('disabled', true).prop('required', false).val('');
+}
+{# 启用是否为餐饮商户 #}
+function enable_is_catering_merchant() {
+    $('#id_is_catering_merchant').prop('disabled', false).prop('required', true);
+}
+{# 禁用食盐配送 #}
+function disable_salt_delivery() {
+    $('#id_salt_delivery').prop('disabled', true).prop('required', false).val('');
+}
+{# 启用食盐配送 #}
+function enable_salt_delivery() {
+    $('#id_salt_delivery').prop('disabled', false).prop('required', true);
+}
+
+{# 给模态框传值，点击操作按钮触发 #}
+function give_merchant_comment_modal(
+    customer_id,
+    is_merchant,
+    is_installed_micro_post_pay,
+    is_catering_merchant,
+    salt_delivery,
+) {
+    // 定义布尔值映射关系
+    let boolean_value_converter = {'True': '1', 'False': '0', '': ''};
+    // 转换参数值
+    is_merchant = boolean_value_converter[is_merchant];
+    is_installed_micro_post_pay = boolean_value_converter[is_installed_micro_post_pay];
+    is_catering_merchant = boolean_value_converter[is_catering_merchant];
+
+    let is_merchant_attr = $('#id_is_merchant');
+    let is_installed_micro_post_pay_attr = $('#id_is_installed_micro_post_pay');
+    let is_is_catering_merchant_attr = $('#id_is_catering_merchant');
+    let salt_delivery_attr = $('#id_salt_delivery');
+
+    // 开始赋值
+    $('#id_merchant_comment_customer_id').val(customer_id);
+    is_merchant_attr.val(is_merchant);
+    if (is_merchant_attr.val() === '1') {
+        // 选择了是商户，启用是否安装微邮付和是否为餐饮商户并给它们赋值
+        enable_is_installed_micro_post_pay();
+        is_installed_micro_post_pay_attr.val(is_installed_micro_post_pay);
+        enable_is_catering_merchant();
+        is_is_catering_merchant_attr.val(is_catering_merchant);
+        if (is_is_catering_merchant_attr.val() === '1') {
+            // 选择了是餐饮商户，启用食盐配送并给它赋值
+            enable_salt_delivery();
+            salt_delivery_attr.val(salt_delivery);
+        }
+    } else {
+        // 否则，禁用安装微邮付、是否为餐饮商户和食盐配送
+        disable_is_installed_micro_post_pay();
+        disable_is_catering_merchant();
+        disable_salt_delivery();
+    }
+}
+$(function () {
+    {# 监听是否为商户的变化 #}
+    $('#id_is_merchant').on('change', function () {
+        if ($(this).val() === '1') {
+            // 选择了是商户，启用是否安装微邮付
+            enable_is_installed_micro_post_pay();
+            // 启用是否为餐饮商户
+            enable_is_catering_merchant();
+        } else {
+            // 否则，禁用是否安装微邮付
+            disable_is_installed_micro_post_pay();
+            // 禁用是否为餐饮商户
+            disable_is_catering_merchant();
+            // 禁用食盐配送
+            disable_salt_delivery();
+        }
+    });
+    {# 监听是否为餐饮商户变化 #}
+    $('#id_is_catering_merchant').on('change', function () {
+        if ($(this).val() === '1') {
+            // 选择了是餐饮商户，启用食盐配送
+            enable_salt_delivery();
+        } else {
+            // 否则，禁用食盐配送
+            disable_salt_delivery();
+        }
+    });
+});
 </script>
 {% endblock %}
