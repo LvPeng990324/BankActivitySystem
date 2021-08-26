@@ -208,12 +208,14 @@
         </div>
         <div class="modal-body">
           <div class="form-group">
-            <label for="id_give_customer" class="control-label">发放客户：</label>
+            <label for="id_search_customer" class="control-label">手机号搜索客户：</label>
+            <input class="form-control" id="id_search_customer" name="search_customer" placeholder="输入手机号来搜索">
+            <button class="form-control btn btn-info" type="button" onclick="search_customer_by_phone()">搜索</button>
+          </div>
+          <div class="form-group">
+            <label for="id_give_customer" class="control-label">确认客户姓名：</label>
             <select class="form-control" id="id_give_customer" name="give_customer" required>
-              <option value="">---选择要发放的客户---</option>
-              {% for customer in customers %}
-              <option value="{{ customer.id }}">{{ customer.name }}</option>
-              {% endfor %}
+              <option id="id_give_customer_option" value="">---请先使用手机号搜索客户---</option>
             </select>
           </div>
           <div class="form-group">
@@ -284,6 +286,38 @@ function give_delete_modal(merchandise_id) {
 {# 给发放商品模态框赋值 #}
 function give_give_modal(merchandise_id) {
     $('#id_give_id').val(merchandise_id);
+}
+
+{# 使用手机号搜索客户 #}
+function search_customer_by_phone() {
+    let phone = $('#id_search_customer').val();
+    let give_customer_option_attr = $('#id_give_customer_option');
+
+    // 从接口搜索客户
+    $.ajax({
+        type: "get",
+        url: "{% url 'Customer:get_customer_by_phone' %}",
+        traditional: true,
+        data: {
+            'phone': phone,
+        },
+        success: function (arg) {
+            // 给记录发放客户的选项赋值
+            if (arg.message === 'ok') {
+                // 找到客户了
+                give_customer_option_attr.val(arg.customer_id);  // 给客户id
+                give_customer_option_attr.html(arg.name);  // 给客户名字
+                // 给提示
+                lightyear.notify('找到该手机号的客户了', 'success', 3000);
+            } else {
+                // 没找到客户
+                give_customer_option_attr.val('');  // value给空
+                give_customer_option_attr.html(arg.message);  // 给后台返回的提示
+                // 给提示
+                lightyear.notify('该手机号的客户不存在', 'warning', 3000);
+            }
+        }
+    })
 }
 </script>
 {% endblock %}

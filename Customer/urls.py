@@ -9,6 +9,7 @@ from Customer.views.ChangePassword import ChangePassword
 from Customer.views.ReceivedMerchandise import ReceivedMerchandise
 
 from Customer.apis.get_customer_comments import get_customer_comments
+from Customer.apis.get_customer_by_phone import get_customer_by_phone
 
 from utils.LogOut import customer_logout
 
@@ -34,6 +35,8 @@ urlpatterns = [
 
     # 获取客户备注接口
     path('get-customer-comment/', get_customer_comments, name='get_customer_comment'),
+    # 通过手机号获取客户信息
+    path('get-customer-by-phone/', get_customer_by_phone, name='get_customer_by_phone'),
 
     # 登出
     path('logout/', customer_logout, name='logout'),
