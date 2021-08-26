@@ -7,61 +7,101 @@
 
 {% block main_content %}
 <div class="container-fluid">
-    {% if success_message %}
-      <div class="alert alert-success alert-dismissible" role="alert">
-          <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
-          <strong>成功</strong> {{ success_message }}
-      </div>
-    {% elif error_message %}
-      <div class="alert alert-danger alert-dismissible" role="alert">
-          <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
-          <strong>失败</strong> {{ error_message }}
-      </div>
-    {% endif %}
-    <div class="row">
-      <div class="col-lg-12">
-        <div class="card">
-          <div class="card-toolbar clearfix">
-            <form class="pull-right search-bar" method="get" action="{% url 'AdminFirst:merchandise_management' %}" role="form">
-              <div class="input-group">
-                <input type="text" class="form-control" name="filter_keyword" value="{{ filter_keyword }}" placeholder="模糊搜索">
-                <span class="input-group-btn">
-                  <button class="btn btn-default" type="submit">搜索</button>
-                </span>
-              </div>
+  {% if success_message %}
+    <div class="alert alert-success alert-dismissible" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+        <strong>成功</strong> {{ success_message }}
+    </div>
+  {% elif error_message %}
+    <div class="alert alert-danger alert-dismissible" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+        <strong>失败</strong> {{ error_message }}
+    </div>
+  {% endif %}
+  <div class="row">
+    <div class="col-lg-12">
+      <div class="card">
+        <div class="card-toolbar clearfix">
+          <form class="pull-right search-bar" method="get" action="{% url 'AdminFirst:merchandise_management' %}" role="form">
+            <div class="input-group">
+              <input type="text" class="form-control" name="filter_keyword" value="{{ filter_keyword }}" placeholder="模糊搜索">
+              <span class="input-group-btn">
+                <button class="btn btn-default" type="submit">搜索</button>
+              </span>
+            </div>
 
-            </form>
-            <div class="toolbar-btn-action">
+          </form>
+          <div class="toolbar-btn-action">
 {#                <a data-toggle="modal" data-target="#add_merchandise" class="btn btn-primary m-r-5"><i class="mdi mdi-plus"></i> 新增</a>#}
-            </div>
           </div>
-          <div class="card-body">
-            <div class="table-responsive">
-              <table class="table table-bordered table-hover">
-                <thead>
-                  <tr>
-                    <th>ID</th>
-                    <th>商品名</th>
-                    <th>库存量</th>
-                    <th>介绍</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {% for merchandise in merchandises %}
-                  <tr>
-                    <td>{{ merchandise.id }}</td>
-                    <td>{{ merchandise.name }}</td>
-                    <td>{{ merchandise.remain_num }}</td>
-                    <td>{{ merchandise.description }}</td>
-                  </tr>
-                  {% endfor %}
-                </tbody>
-              </table>
-            </div>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-bordered table-hover">
+              <thead>
+                <tr>
+                  <th>ID</th>
+                  <th>商品名</th>
+                  <th>库存量</th>
+                  <th>介绍</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for merchandise in merchandises %}
+                <tr>
+                  <td>{{ merchandise.id }}</td>
+                  <td>{{ merchandise.name }}</td>
+                  <td>{{ merchandise.remain_num }}</td>
+                  <td>{{ merchandise.description }}</td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
           </div>
         </div>
       </div>
     </div>
+  </div>
+
+  {# 发放记录表格 #}
+  <div class="row">
+    <div class="col-lg-12">
+      <div class="card">
+        <div class="card-toolbar clearfix">
+          <h4>发放记录</h4>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-bordered table-hover">
+              <thead>
+                <tr>
+                  <th>发放记录ID</th>
+                  <th>商品名</th>
+                  <th>发放人</th>
+                  <th>接收客户</th>
+                  <th>数量</th>
+                  <th>发放时间</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for give_merchandise_record in give_merchandise_records %}
+                <tr>
+                  <td>{{ give_merchandise_record.id }}</td>  {# 发放记录ID #}
+                  <td>{{ give_merchandise_record.merchandise.name }}</td>  {# 商品名 #}
+                  <td>{{ give_merchandise_record.give_admin_name }}</td>  {# 发放人 #}
+                  <td>{{ give_merchandise_record.customer.name }}-{{ give_merchandise_record.customer.phone }}</td>  {# 接收客户 #}
+                  <td>{{ give_merchandise_record.give_num }}</td>  {# 数量 #}
+                  <td>{{ give_merchandise_record.give_time }}</td>  {# 发放时间 #}
+
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
 </div>
 {% endblock %}
 

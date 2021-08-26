@@ -37,11 +37,15 @@ class MerchandiseManagement(View):
         # 取出这些三级管理员的客户们
         customers = Customer.objects.filter(activityrecord__admin_third__in=admin_thirds)
 
+        # 获取所有的商品发放记录并按照发放时间逆序排序
+        give_merchandise_records = GiveMerchandiseRecord.objects.all().order_by('-give_time')
+
         # 打包数据
         context = {
             'merchandises': merchandises,
             'filter_keyword': filter_keyword,
             'customers': customers,
+            'give_merchandise_records': give_merchandise_records,
         }
         return render(request, 'AdminSecond/merchandise-management.html', context=context)
 
