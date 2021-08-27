@@ -67,7 +67,7 @@ def export_activity_record_customer_info(data):
     for line in data:
         temp_list.append(line.id)  # 活动记录ID
         temp_list.append(line.customer.name)  # 姓名
-        temp_list.append(line.customer.tag)  # 标签
+        temp_list.append('{} {}'.format('会员' if line.customer.is_vip else '非会员', line.customer.tag))  # 标签
         temp_list.append(line.customer.gender)  # 性别
         temp_list.append(line.customer.phone)  # 手机号
         temp_list.append('{}-{}-{}-{}'.format(line.customer.town, line.customer.village, line.customer.group, line.customer.street))  # 地址
@@ -75,7 +75,7 @@ def export_activity_record_customer_info(data):
         temp_list.append('是' if line.customer.is_installed_micro_post_pay else '否')  # 是否安装微邮付
         temp_list.append('是' if line.customer.is_catering_merchant else '否')  # 是否为餐饮商户
         temp_list.append(line.customer.salt_delivery)  # 食盐配送
-        temp_list.append(line.customer.activiey.name)  # 参与活动
+        temp_list.append(line.activity.name)  # 参与活动
         temp_list.append(line.create_time)  # 报名时间
         temp_list.append(line.admin_third.name)  # 客户经理
 

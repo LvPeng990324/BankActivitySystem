@@ -17,6 +17,7 @@ from Address.models import Town
 from utils.SendNotice import send_one
 from utils.CheckExists import check_customer_phone_exists
 from utils.login_checker import admin_third_login_required
+from utils.ExportExcel import export_activity_record_customer_info
 
 
 class CustomerManagement(View):
@@ -97,6 +98,7 @@ class CustomerManagement(View):
         # send_notice 发送通知
         # change_comment 修改备注
         # merchant_comment 商户备注
+        # export_activity_record_customer_info 导出活动记录和客户信息表
         action = request.POST.get('action')
         if action == 'add':
             # 获取填写的用户信息
@@ -265,6 +267,14 @@ class CustomerManagement(View):
                 reverse('AdminThird:customer_management') + '?town={}&village={}&group={}'.format(town, village,
                                                                                                   group)
             )
+        elif action == 'export_activity_record_customer_info':
+            # 取出此三级管理员的客户参与活动记录
+            activity_records = ActivityRecord.objects.filter(
+                admin_third__job_num=request.session.get('job_num'),
+            )
+
+            # 返回Excel文件
+            return export_activity_record_customer_info(data=activity_records)
         else:
             # 未知错误，不明的操作
             # 记录非法操作错误并重定向客户管理页面
