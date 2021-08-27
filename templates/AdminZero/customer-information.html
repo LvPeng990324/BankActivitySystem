@@ -24,10 +24,7 @@
           <div class="card-toolbar clearfix">
             <form class="pull-right search-bar" method="get" action="{% url 'AdminZero:customer_information' %}" role="form">
               <div class="input-group">
-                <input type="text" class="form-control" name="filter_keyword" value="{{ filter_keyword }}" placeholder="模糊搜索">
-                <span class="input-group-btn">
-                  <button class="btn btn-default" type="submit">搜索</button>
-                </span>
+                {# 原搜索框 #}
               </div>
 
             </form>
@@ -37,17 +34,18 @@
           </div>
           <div class="card-body">
             <div class="table-responsive">
-              <table class="table table-bordered table-hover">
+              <table id="id_customer_table" data-advanced-sortable="true" data-pagination="false"  class="table table-bordered table-hover">
                 <thead>
                   <tr>
-                    <th>姓名</th>
-                    <th>标签</th>
-                    <th>性别</th>
-                    <th>手机号</th>
-                    <th>地址</th>
-                    <th>参与活动</th>
-                    <th>客户经理</th>
-                    <th>报名时间</th>
+                    <th data-field="name" data-sortable="true" data-search-type="text">姓名</th>
+                    <th data-field="tag" data-sortable="true" data-search-type="text">标签</th>
+                    <th data-field="gender" data-sortable="true" data-search-type="radio" data-search-select=["男","女"]>性别</th>
+                    <th data-field="phone" data-sortable="true" data-search-type="text">手机号</th>
+                    <th data-field="address" data-sortable="true" data-search-type="text">地址</th>
+                    <th data-field="is_merchant" data-sortable="true" data-search-type="radio" data-search-select=["是","否"]>是否商户</th>
+                    <th data-field="activity" data-sortable="true" data-search-type="text">参与活动</th>
+                    <th data-field="admin_third" data-sortable="true" data-search-type="text">客户经理</th>
+                    <th data-field="create_time" data-sortable="true" data-search-type="date">报名时间</th>
                     <th>操作</th>
                   </tr>
                 </thead>
@@ -68,9 +66,10 @@
                     <td>{{ activity_record.customer.gender }}</td>
                     <td>{{ activity_record.customer.phone }}</td>
                     <td><small>{{ activity_record.customer.town }}-{{ activity_record.customer.village }}-{{ activity_record.customer.group }}-{{ activity_record.customer.street }}</small></td>
+                    <td>{% if activity_record.customer.is_merchant %}是{% else %}否{% endif %}</td>
                     <td>{{ activity_record.activity.name }}</td>
                     <td>{{ activity_record.admin_third.name }}</td>
-                    <td>{{ activity_record.create_time }}</td>
+                    <td>{{ activity_record.create_time|date:'Y-m-d H:i:s' }}</td>
                     <td nowrap="norap">
                       <div class="btn-group-justified">
                         <a data-toggle="modal" data-target="#change_tag" class="btn btn-xs btn-default" title="修改标签"
@@ -280,6 +279,12 @@
 {% endblock %}
 
 {% block js_content %}
+<script>
+{# 初始化数据表格 #}
+$(function () {
+    $('#id_customer_table').bootstrapTable();
+})
+</script>
 <!-- 给修改标签模态框传值 -->
 <script type="text/javascript">
     function give_change_tag_modal(

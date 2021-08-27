@@ -41,7 +41,7 @@ class CustomerInformation(View):
         if town == '所有镇子':
             town = ''
         # 获取可能存在的筛选关键字
-        filter_keyword = request.GET.get('filter_keyword', '')
+        filter_keyword = request.GET.get('filter_keyword', '')  # TODO 这个页面没有后台筛选了，可以考虑删除这部分
         # 筛选客户参与记录，并按照创建时间逆序排序
         activity_records = ActivityRecord.objects.filter(
             Q(customer__name__contains=filter_keyword) |

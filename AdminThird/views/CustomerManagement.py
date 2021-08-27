@@ -46,7 +46,7 @@ class CustomerManagement(View):
             town = ''
         # 获取可能的筛选字段并筛选活动记录
         # 并且同时根据地址范围筛选
-        filter_keyword = request.GET.get('filter_keyword', '')
+        filter_keyword = request.GET.get('filter_keyword', '')  # TODO 这个页面没有后台筛选了，可以考虑删除这部分
         activity_records = ActivityRecord.objects.filter(
             Q(admin_third=AdminThird.objects.get(job_num=request.session.get('job_num'))),
             Q(customer__name__contains=filter_keyword) |

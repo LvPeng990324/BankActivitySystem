@@ -2,17 +2,25 @@
 <!DOCTYPE html>
 <html lang="zh">
 <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
-    <title>{% block title %}{% endblock %}</title>
-    <link rel="icon" href="{% static 'logo/favicon.ico' %}" type="image/ico">
-    <link href="{% static 'AdminThird/css/bootstrap.min.css' %}" rel="stylesheet">
-    <link href="{% static 'AdminThird/css/materialdesignicons.min.css' %}" rel="stylesheet">
-    <link href="{% static 'AdminThird/css/style.min.css' %}" rel="stylesheet">
-    <link href="{% static 'AdminThird/css/animate.css' %}" rel="stylesheet">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" />
+  <title>{% block title %}{% endblock %}</title>
+  <link rel="icon" href="{% static 'logo/favicon.ico' %}" type="image/ico">
+  <link href="{% static 'AdminThird/css/bootstrap.min.css' %}" rel="stylesheet">
+  <link href="{% static 'AdminThird/css/materialdesignicons.min.css' %}" rel="stylesheet">
+  <link href="{% static 'AdminThird/css/style.min.css' %}" rel="stylesheet">
+  <link href="{% static 'AdminThird/css/animate.css' %}" rel="stylesheet">
 
-    {% block css_content %}
-    {% endblock %}
+  <!--日期选择插件-->
+  <link rel="stylesheet" href="{% static 'AdminThird/js/bootstrap-datepicker/bootstrap-datepicker3.min.css' %}">
+
+  <!--bootstrap表格控件-->
+  <link href="{% static 'bootstrap_table/bootstrap-table-master/css/bootstrap-table.css' %}" rel="stylesheet">
+  <link href="{% static 'bootstrap_table/select2/css/select2.css' %}" rel="stylesheet">
+  <link href="{% static 'bootstrap_table/bootstrap-advanced-sortable/css/bootstrap-advanced-sortable.css' %}" rel="stylesheet">
+
+  {% block css_content %}
+  {% endblock %}
 </head>
 
 <body>
@@ -115,6 +123,15 @@
 <script type="text/javascript" src="{% static 'AdminThird/js/main.min.js' %}"></script>
 <script type="text/javascript" src="{% static 'AdminThird/js/bootstrap-notify.min.js' %}"></script>
 <script type="text/javascript" src="{% static 'AdminThird/js/lightyear.js' %}"></script>
+
+<!--日期选择插件-->
+<script src="{% static 'AdminThird/js/bootstrap-datepicker/bootstrap-datepicker.min.js' %}"></script>
+<script src="{% static 'AdminThird/js/bootstrap-datepicker/locales/bootstrap-datepicker.zh-CN.min.js' %}"></script>
+
+<!--bootstrap表格控件-->
+<script src="{% static 'bootstrap_table/bootstrap-table-master/js/bootstrap-table.js' %}"></script>
+<script src="{% static 'bootstrap_table/select2/js/select2.js' %}"></script>
+<script src="{% static 'bootstrap_table/bootstrap-advanced-sortable/js/bootstrap-advanced-sortable.js' %}"></script>
 
 <!-- 消息提示框 -->
 {% if messages %}
