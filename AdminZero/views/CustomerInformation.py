@@ -13,6 +13,7 @@ from Address.models import Town
 from AdminThird.models import AdminThird
 
 from utils.login_checker import admin_zero_login_required
+from utils.ExportExcel import export_activity_record_customer_info
 
 
 class CustomerInformation(View):
@@ -82,6 +83,7 @@ class CustomerInformation(View):
         # change_comment 更改备注
         # merchant_comment 商户备注
         # change_admin_third 更改客户经理
+        # export_activity_record_customer_info 导出活动记录和客户信息表
         action = request.POST.get('action')
         if action == 'change_tag':
             # 获取要更改的客户id以及要更改的信息
@@ -149,8 +151,6 @@ class CustomerInformation(View):
                 reverse('AdminZero:customer_information') + '?town={}&village={}&group={}'.format(town, village,
                                                                                                   group)
             )
-
-
         elif action == 'change_admin_third':
             # 获取信息
             change_admin_third_activity_record_id = request.POST.get('change_admin_third_activity_record_id')
@@ -184,6 +184,12 @@ class CustomerInformation(View):
                 reverse('AdminZero:customer_information') + '?town={}&village={}&group={}'.format(town, village,
                                                                                                     group)
             )
+        elif action == 'export_activity_record_customer_info':
+            # 取出所有客户参与活动记录
+            activity_records = ActivityRecord.objects.all()
+
+            # 返回Excel文件
+            return export_activity_record_customer_info(data=activity_records)
         else:
             # 未知错误，不明的操作
             # 记录非法操作错误并重定向客户信息页面
