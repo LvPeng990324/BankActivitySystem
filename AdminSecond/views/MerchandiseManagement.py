@@ -11,6 +11,7 @@ from Customer.models import Customer
 from Merchandise.models import GiveMerchandiseRecord
 
 from utils.login_checker import admin_second_login_required
+from utils.ExportExcel import export_give_merchandise_record
 
 
 class MerchandiseManagement(View):
@@ -58,6 +59,7 @@ class MerchandiseManagement(View):
         # change_merchandise 修改商品
         # give_merchandise 修改商品
         # delete_merchandise 删除商品
+        # export_give_merchandise_record 导出商品发放记录表
         if action == 'add_merchandise':
             return add_merchandise_action(request)
         elif action == 'change_merchandise':
@@ -66,6 +68,8 @@ class MerchandiseManagement(View):
             return give_merchandise_action(request)
         elif action == 'delete_merchandise':
             return delete_merchandise_action(request)
+        elif action == 'export_give_merchandise_record':
+            return export_give_merchandise_record_action(request)
         else:
             messages.error(request, '未定义的动作，请重试')
             return redirect('AdminSecond:merchandise_management')
@@ -192,6 +196,16 @@ def delete_merchandise_action(request):
     # 记录成功信息
     messages.success(request, '删除成功')
     return redirect('AdminSecond:merchandise_management')
+
+
+def export_give_merchandise_record_action(request):
+    """ 导出商品发放记录表
+    """
+    # 获取所有的商品发放记录并按照发放时间逆序排序
+    give_merchandise_records = GiveMerchandiseRecord.objects.all().order_by('-give_time')
+
+    # 导出Excel
+    return export_give_merchandise_record(data=give_merchandise_records)
 
 
 

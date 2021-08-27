@@ -32,7 +32,8 @@
 
           </form>
           <div class="toolbar-btn-action">
-              <a data-toggle="modal" data-target="#add_merchandise" class="btn btn-primary m-r-5"><i class="mdi mdi-plus"></i> 新增</a>
+            <a data-toggle="modal" data-target="#add_merchandise" class="btn btn-primary m-r-5"><i class="mdi mdi-plus"></i> 新增</a>
+            <a data-toggle="modal" data-target="#export_give_merchandise_record" class="btn btn-primary m-r-5"><i class="mdi mdi-cloud-download"></i> 导出发放记录</a>
           </div>
         </div>
         <div class="card-body">
@@ -255,6 +256,30 @@
     </div>
   </div>
 </div>
+
+<!-- 导出商品发放记录模态框 -->
+<div class="modal fade" id="export_give_merchandise_record" tabindex="-1" role="dialog" aria-labelledby="delModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <form action="{% url 'AdminSecond:merchandise_management' %}" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input name="action" value="export_give_merchandise_record" hidden>
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="delModalLabel">导出商品发放记录</h4>
+        </div>
+        <div class="modal-body">
+          <p>将会下载记录着所有商品发放记录的Excel文件</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+          <button type="submit" class="btn btn-info">导出下载</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
 {% endblock %}
 
 {% block js_content %}
