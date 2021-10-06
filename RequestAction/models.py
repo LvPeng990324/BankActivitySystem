@@ -28,7 +28,7 @@ class RequestActionLog(models.Model):
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE, verbose_name='客户', help_text='客户')
 
     name = models.CharField(max_length=128, verbose_name='名称', help_text='名称')
-    remark = models.TextField(verbose_name='备注', help_text='备注')
+    remark = models.TextField(null=True, blank=True, verbose_name='备注', help_text='备注')
     start_date = models.DateField(null=True, blank=True, verbose_name='起始日期', help_text='起始日期')
     end_date = models.DateField(null=True, blank=True, verbose_name='截止日期', help_text='截止日期')
     create_time = models.DateTimeField(auto_now_add=True, verbose_name='创建时间', help_text='创建时间')
