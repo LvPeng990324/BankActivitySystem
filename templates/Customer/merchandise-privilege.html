@@ -1,0 +1,94 @@
+{% extends 'Customer/base.html' %}
+{% load static %}
+
+{% block title %}商户特权{% endblock %}
+{% block page_title %}商户特权{% endblock %}
+{% block request_action_active %}active{% endblock %}
+
+{% block main_content %}
+<div class="container-fluid">
+
+  <div class="row">
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-header"><h4>请求动作</h4></div>
+        <div class="card-body">
+
+          <form class="form-horizontal" action="{% url 'Customer:merchandise_privilege' %}" method="post">
+            {% csrf_token %}
+
+            <div class="form-group">
+              <label class="col-xs-12" for="id_request_action">请求动作</label>
+              <div class="col-xs-12">
+                <select class="form-control" id="id_request_action" name="request_action" required>
+                  <option value="">---请选择一项---</option>
+                  {% for request_action in request_actions %}
+                  <option value="{{ request_action.id }}">{{ request_action.name }}</option>
+                  {% endfor %}
+                </select>
+              </div>
+            </div>
+            <div class="form-group">
+              <label class="col-xs-12" for="id_remark">备注</label>
+              <div class="col-xs-12">
+                <textarea class="form-control" id="id_remark" name="remark" rows="6" placeholder="输入备注.."></textarea>
+              </div>
+            </div>
+
+            <div class="form-group">
+              <div class="col-xs-12">
+                <button class="btn btn-primary" type="submit">提交</button>
+              </div>
+            </div>
+          </form>
+
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-6">
+      <div class="card">
+        <div class="card-header"><h4>请求记录</h4></div>
+        <div class="card-body">
+
+          <div class="table-responsive">
+              <table class="table table-bordered table-hover">
+                <thead>
+                  <tr>
+                    <th>请求名称</th>
+                    <th>请求时间</th>
+                    <th>备注</th>
+                    <th>处理状态</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {% for request_action_log in request_action_logs %}
+                  <tr>
+                    <td>{{ request_action_log.name }}</td>
+                    <td>{{ request_action_log.create_time }}</td>
+                    <td>{{ request_action_log.remark }}</td>
+                    <td>
+                      {% if request_action_log.is_finished %}
+                      已完成
+                      {% else %}
+                      待处理
+                      {% endif %}
+                    </td>
+                  </tr>
+                  {% endfor %}
+
+                </tbody>
+              </table>
+            </div>
+
+        </div>
+      </div>
+
+
+
+    </div>
+
+  </div>
+
+</div>
+{% endblock %}

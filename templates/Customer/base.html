@@ -1,4 +1,5 @@
 {% load static %}
+{% load check_customer_type %}
 <!DOCTYPE html>
 <html lang="zh">
 <head>
@@ -33,6 +34,9 @@
               <li class="nav-item {% block my_notice_active %}{% endblock %}"> <a href="{% url 'Customer:my_notice' %}"><i class="mdi mdi-message-bulleted"></i> 我的通知</a> </li>
               <li class="nav-item {% block progressing_activity_active %}{% endblock %}"> <a href="{% url 'Customer:progressing_activity' %}"><i class="mdi mdi-file-document"></i> 进行中活动</a> </li>
               <li class="nav-item {% block received_merchandise_active %}{% endblock %}"> <a href="{% url 'Customer:received_merchandise' %}"><i class="mdi mdi-gift"></i> 获得的礼品</a> </li>
+              {% if request.session.customer_id|check_customer_merchandise %}
+              <li class="nav-item {% block request_action_active %}{% endblock %}"> <a href="{% url 'Customer:merchandise_privilege' %}"><i class="mdi mdi-store"></i> 商户特权</a> </li>
+              {% endif %}
           </ul>
         </nav>
 

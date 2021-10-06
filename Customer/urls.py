@@ -7,6 +7,7 @@ from Customer.views.ActivityDetail import ActivityDetail
 from Customer.views.BecomeVip import BecomeVip
 from Customer.views.ChangePassword import ChangePassword
 from Customer.views.ReceivedMerchandise import ReceivedMerchandise
+from Customer.views.MerchandisePrivilege import MerchandisePrivilege
 
 from Customer.apis.get_customer_comments import get_customer_comments
 from Customer.apis.get_customer_by_phone import get_customer_by_phone
@@ -32,6 +33,8 @@ urlpatterns = [
     path('change-password/', ChangePassword.as_view(), name='change_password'),
     # 收到的礼品
     path('received-merchandise/', ReceivedMerchandise.as_view(), name='received_merchandise'),
+    # 商户特权
+    path('merchandise-privilege/', MerchandisePrivilege.as_view(), name='merchandise_privilege'),
 
     # 获取客户备注接口
     path('get-customer-comment/', get_customer_comments, name='get_customer_comment'),
