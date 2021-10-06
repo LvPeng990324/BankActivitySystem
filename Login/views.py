@@ -189,10 +189,14 @@ class CustomerLogin(View):
             request.session['error_message'] = '未知的登录方法，请重试'
             return redirect('Login:customer_login')
 
+        # 取出当前客户
+        customer = Customer.objects.get(phone=phone)
+
         # 没问题了，记录登录信息
         request.session['who_login'] = 'Customer'
         request.session['customer_phone'] = phone
-        request.session['name'] = Customer.objects.get(phone=phone).name
+        request.session['customer_id'] = customer.id
+        request.session['name'] = customer.name
 
         # 重定向客户登录页面，将会根据记录的登录信息自动跳转相应的页面
         return redirect('Login:customer_login')

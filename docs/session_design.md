@@ -4,6 +4,7 @@
 - who_login 登录者身份
 - job_num 登录者工号
 - customer_phone 客户手机号
+- customer_id 客户id
 - error_message 错误信息
 - success_message 成功信息
 - name 登陆者姓名
