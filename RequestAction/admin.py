@@ -1,10 +1,19 @@
 from django.contrib import admin
 
 from RequestAction.models import RequestAction
+from RequestAction.models import RequestActionLog
 
 
 @admin.register(RequestAction)
 class RequestActionInformation(admin.ModelAdmin):
+    list_display = (
+        'id',
+        'name',
+    )
+
+
+@admin.register(RequestActionLog)
+class RequestActionLogInformation(admin.ModelAdmin):
     list_display = (
         'id',
         'name',

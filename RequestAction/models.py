@@ -9,6 +9,22 @@ class RequestAction(models.Model):
     动作类型可以由相应的管理员进行管理
     上级用户也可以代理用户发出动作，并规定完成时间段
     """
+    name = models.CharField(max_length=128, verbose_name='名称', help_text='名称')
+
+    class Meta:
+        verbose_name_plural = '请求动作'
+        verbose_name = '请求动作'
+
+    def __str__(self):
+        return '{}-{}'.format(
+            self.id,
+            self.name,
+        )
+
+
+class RequestActionLog(models.Model):
+    """ 请求记录
+    """
     customer = models.ForeignKey(Customer, on_delete=models.CASCADE, verbose_name='客户', help_text='客户')
 
     name = models.CharField(max_length=128, verbose_name='名称', help_text='名称')
@@ -19,8 +35,8 @@ class RequestAction(models.Model):
     is_finished = models.BooleanField(default=False, verbose_name='是否已完成', help_text='是否已完成')
 
     class Meta:
-        verbose_name_plural = '请求动作'
-        verbose_name = '请求动作'
+        verbose_name_plural = '请求记录'
+        verbose_name = '请求记录'
 
     def __str__(self):
         return '{}-{}-{}'.format(
@@ -28,3 +44,4 @@ class RequestAction(models.Model):
             self.name,
             self.is_finished,
         )
+
