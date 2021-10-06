@@ -18,6 +18,7 @@ class RequestActionLogInformation(admin.ModelAdmin):
         'id',
         'name',
         'get_customer_name',
+        'create_time',
         'start_date',
         'end_date',
         'is_finished',
