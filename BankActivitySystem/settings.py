@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'Notice.apps.NoticeConfig',
     'Login.apps.LoginConfig',
     'Merchandise.apps.MerchandiseConfig',
+    'RequestAction.apps.RequestactionConfig',
     'ckeditor',
     'ckeditor_uploader',
     'django_cleanup',
