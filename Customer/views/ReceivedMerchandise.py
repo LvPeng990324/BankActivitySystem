@@ -9,7 +9,7 @@ from utils.login_checker import customer_login_required
 
 
 class ReceivedMerchandise(View):
-    """ 收到的礼品
+    """ 我的礼品
     """
     @method_decorator(customer_login_required)
     def get(self, request):
