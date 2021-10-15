@@ -1,0 +1,139 @@
+{% extends 'AdminSecond/base.html' %}
+
+{% block title %}商户请求{% endblock %}
+{% block page_title %}商户请求{% endblock %}
+{% block merchandise_request_active %}active{% endblock %}
+
+{% block main_content %}
+<div class="container-fluid">
+  {% if success_message %}
+    <div class="alert alert-success alert-dismissible" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+        <strong>成功</strong> {{ success_message }}
+    </div>
+  {% elif error_message %}
+    <div class="alert alert-danger alert-dismissible" role="alert">
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+        <strong>失败</strong> {{ error_message }}
+    </div>
+  {% endif %}
+
+  {# 请求记录表格 #}
+  <div class="row">
+    <div class="col-lg-12">
+      <div class="card">
+        <div class="card-toolbar clearfix">
+          <h4>请求记录-待处理</h4>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-bordered table-hover">
+              <thead>
+                <tr>
+                  <th>请求记录ID</th>
+                  <th>请求人</th>
+                  <th>请求时间</th>
+                  <th>请求动作</th>
+                  <th>确认</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for pending_request_action_log in pending_request_action_logs %}
+                <tr>
+                  <td>{{ pending_request_action_log.id }}</td>  {# 请求记录ID #}
+                  <td>{{ pending_request_action_log.customer.name }} {{ pending_request_action_log.customer.phone }}</td>  {# 请求人 #}
+                  <td>{{ pending_request_action_log.create_time }}</td>  {# 请求时间 #}
+                  <td>{{ pending_request_action_log.name }}</td>  {# 请求动作 #}
+                  <td nowrap="norap">
+                    <a data-toggle="modal" data-target="#confirm_finished" class="btn btn-xs btn-default" title="确认"
+                    onclick="give_confirm_finished_modal('{{ pending_request_action_log.id }}')">
+                        <i class="mdi mdi-comment-check"></i>
+                    </a>
+                  </td>
+
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {# 请求动作管理表格 #}
+  <div class="row">
+    <div class="col-lg-12">
+      <div class="card">
+        <div class="card-toolbar clearfix">
+          <h4>请求记录-已完成</h4>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-bordered table-hover">
+              <thead>
+                <tr>
+                  <th>请求记录ID</th>
+                  <th>请求人</th>
+                  <th>请求时间</th>
+                  <th>请求动作</th>
+                  <th>完成时间</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for finished_request_action_log in finished_request_action_logs %}
+                <tr>
+                  <td>{{ finished_request_action_log.id }}</td>  {# 请求记录ID #}
+                  <td>{{ finished_request_action_log.customer.name }} {{ finished_request_action_log.customer.phone }}</td>  {# 请求人 #}
+                  <td>{{ finished_request_action_log.create_time }}</td>  {# 请求时间 #}
+                  <td>{{ finished_request_action_log.name }}</td>  {# 请求动作 #}
+                  <td>{{ finished_request_action_log.finished_time }}</td>  {# 完成时间 #}
+
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+</div>
+{% endblock %}
+
+{% block modal_content %}
+<!-- 确认完成模态框 -->
+<div class="modal fade" id="confirm_finished" tabindex="-1" role="dialog" aria-labelledby="delModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <form action="{% url 'AdminSecond:merchandise_request' %}" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input id="id_request_action_log_id" name="request_action_log_id" hidden>
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="delModalLabel">确认完成</h4>
+        </div>
+        <div class="modal-body">
+          <p style="color: blue;">确定标记为已完成吗？</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+          <button type="submit" class="btn btn-info">确认</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block js_content %}
+<script>
+{# 给确认完成模态框赋值 #}
+function give_confirm_finished_modal(request_action_log_id) {
+    $('#id_request_action_log_id').val(request_action_log_id);
+}
+</script>
+{% endblock %}
+

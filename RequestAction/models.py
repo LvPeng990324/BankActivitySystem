@@ -32,6 +32,7 @@ class RequestActionLog(models.Model):
     start_date = models.DateField(null=True, blank=True, verbose_name='起始日期', help_text='起始日期')
     end_date = models.DateField(null=True, blank=True, verbose_name='截止日期', help_text='截止日期')
     create_time = models.DateTimeField(auto_now_add=True, verbose_name='创建时间', help_text='创建时间')
+    finished_time = models.DateTimeField(null=True, blank=True, verbose_name='完成时间', help_text='完成时间')
 
     is_finished = models.BooleanField(default=False, verbose_name='是否已完成', help_text='是否已完成')
 
