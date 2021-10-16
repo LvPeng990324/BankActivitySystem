@@ -7,6 +7,7 @@ from AdminFirst.views.AdminThirdManagement import AdminThirdManagement
 from AdminFirst.views.NoticeTemplateManagement import NoticeTemplateManagement
 from AdminFirst.views.ActivityManagement import ActivityManagement
 from AdminFirst.views.MerchandiseManagement import MerchandiseManagement
+from AdminFirst.views.MerchandiseRequest import MerchandiseRequest
 
 from utils.LogOut import admin_logout
 
@@ -29,6 +30,8 @@ urlpatterns = [
     path('activity-management/', ActivityManagement.as_view(), name='activity_management'),
     # 商品管理
     path('merchandise-management/', MerchandiseManagement.as_view(), name='merchandise_management'),
+    # 商户请求
+    path('merchandise-request/', MerchandiseRequest.as_view(), name='merchandise_request'),
 
     # 登出
     path('logout/', admin_logout, name='admin_logout'),
