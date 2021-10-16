@@ -8,6 +8,7 @@ from AdminThird.views.GenerateQRCode import GenerateQRCode
 from AdminThird.views.GroupManagement import GroupManagement
 from AdminThird.views.BatchSend import BatchSend
 from AdminThird.views.MerchandiseManagement import MerchandiseManagement
+from AdminThird.views.MerchandiseRequest import MerchandiseRequest
 
 from utils.LogOut import admin_logout
 
@@ -32,6 +33,8 @@ urlpatterns = [
     path('bacth-send/', BatchSend.as_view(), name='batch_send'),
     # 商品管理
     path('merchandise-management/', MerchandiseManagement.as_view(), name='merchandise_management'),
+    # 商户请求
+    path('merchandise-request/', MerchandiseRequest.as_view(), name='merchandise_request'),
 
     # 登出
     path('logout/', admin_logout, name='logout'),

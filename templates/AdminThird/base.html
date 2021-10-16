@@ -39,6 +39,7 @@
           <ul class="nav nav-drawer">
             <li class="nav-item {% block index_active %}{% endblock %}"> <a href="{% url 'AdminThird:admin_index' %}"><i class="mdi mdi-home"></i> 后台首页</a> </li>
             <li class="nav-item {% block customer_management_active %}{% endblock %}"> <a href="{% url 'AdminThird:customer_management' %}"><i class="mdi mdi-account"></i> 客户管理</a> </li>
+            <li class="nav-item {% block merchandise_request_active %}{% endblock %}"> <a href="{% url 'AdminThird:merchandise_request' %}"><i class="mdi mdi-store"></i> 商户请求</a> </li>
             <li class="nav-item {% block merchandise_management_active %}{% endblock %}"> <a href="{% url 'AdminThird:merchandise_management' %}"><i class="mdi mdi-truck"></i> 商品管理</a> </li>
             <li class="nav-item nav-item-has-subnav {% block customer_notice_management_active %}{% endblock %}">
               <a href="javascript:void(0)"><i class="mdi mdi-account-alert"></i> 客户通知管理</a>
