@@ -9,6 +9,7 @@ from AdminZero.views.CustomerInformation import CustomerInformation
 from AdminZero.views.ActivityManagement import ActivityManagement
 from AdminZero.views.NoticeTemplateManagement import NoticeTemplateManagement
 from AdminZero.views.MerchandiseManagement import MerchandiseManagement
+from AdminZero.views.MerchandiseRequest import MerchandiseRequest
 
 from utils.LogOut import admin_logout
 
@@ -35,6 +36,8 @@ urlpatterns = [
     path('notice-template-management/', NoticeTemplateManagement.as_view(), name='notice_template_management'),
     # 商品管理
     path('merchandise-management/', MerchandiseManagement.as_view(), name='merchandise_management'),
+    # 商户请求
+    path('merchandise-request/', MerchandiseRequest.as_view(), name='merchandise_request'),
 
     # 登出
     path('logout/', admin_logout, name='logout'),
