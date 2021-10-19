@@ -10,6 +10,8 @@
     <link href="{% static 'AdminFirst/css/materialdesignicons.min.css' %}" rel="stylesheet">
     <link href="{% static 'AdminFirst/css/style.min.css' %}" rel="stylesheet">
     <link href="{% static 'AdminFirst/css/animate.css' %}" rel="stylesheet">
+    <!--日期选择插件-->
+    <link rel="stylesheet" href="{% static 'AdminFirst/js/bootstrap-datepicker/bootstrap-datepicker3.min.css' %}">
 
     {% block css_content %}
     {% endblock %}
@@ -108,6 +110,9 @@
 <script type="text/javascript" src="{% static 'AdminFirst/js/main.min.js' %}"></script>
 <script type="text/javascript" src="{% static 'AdminFirst/js/bootstrap-notify.min.js' %}"></script>
 <script type="text/javascript" src="{% static 'AdminFirst/js/lightyear.js' %}"></script>
+<!--日期选择插件-->
+<script src="{% static 'AdminFirst/js/bootstrap-datepicker/bootstrap-datepicker.min.js' %}"></script>
+<script src="{% static 'AdminFirst/js/bootstrap-datepicker/locales/bootstrap-datepicker.zh-CN.min.js' %}"></script>
 
 <!-- 消息提示框 -->
 {% if messages %}
