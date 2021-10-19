@@ -33,6 +33,7 @@
                   <th>请求记录ID</th>
                   <th>请求人</th>
                   <th>请求时间</th>
+                  <th>起止日期</th>
                   <th>请求动作</th>
                   <th>确认</th>
                 </tr>
@@ -43,6 +44,7 @@
                   <td>{{ pending_request_action_log.id }}</td>  {# 请求记录ID #}
                   <td>{{ pending_request_action_log.customer.name }} {{ pending_request_action_log.customer.phone }}</td>  {# 请求人 #}
                   <td>{{ pending_request_action_log.create_time }}</td>  {# 请求时间 #}
+                  <td>{{ pending_request_action_log.start_date|default_if_none:'' }} - {{ pending_request_action_log.end_date|default_if_none:'' }}</td>  {# 起止日期 #}
                   <td>{{ pending_request_action_log.name }}</td>  {# 请求动作 #}
                   <td nowrap="norap">
                     <a data-toggle="modal" data-target="#confirm_finished" class="btn btn-xs btn-default" title="确认"
@@ -76,6 +78,7 @@
                   <th>请求记录ID</th>
                   <th>请求人</th>
                   <th>请求时间</th>
+                  <th>起止日期</th>
                   <th>请求动作</th>
                   <th>完成时间</th>
                 </tr>
@@ -86,6 +89,7 @@
                   <td>{{ finished_request_action_log.id }}</td>  {# 请求记录ID #}
                   <td>{{ finished_request_action_log.customer.name }} {{ finished_request_action_log.customer.phone }}</td>  {# 请求人 #}
                   <td>{{ finished_request_action_log.create_time }}</td>  {# 请求时间 #}
+                  <td>{{ finished_request_action_log.start_date|default_if_none:'' }} - {{ finished_request_action_log.end_date|default_if_none:'' }}</td>  {# 起止日期 #}
                   <td>{{ finished_request_action_log.name }}</td>  {# 请求动作 #}
                   <td>{{ finished_request_action_log.finished_time }}</td>  {# 完成时间 #}
 
