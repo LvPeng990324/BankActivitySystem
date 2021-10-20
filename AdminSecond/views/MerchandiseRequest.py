@@ -10,6 +10,7 @@ from RequestAction.models import RequestActionLog
 from AdminThird.models import AdminThird
 
 from utils.login_checker import admin_second_login_required
+from utils.DateUtils import check_date_in_range
 
 
 class MerchandiseRequest(View):
@@ -54,6 +55,14 @@ class MerchandiseRequest(View):
             messages.error(request, '未取到该请求记录，请重试')
             return redirect('AdminSecond:merchandise_request')
         # 取到该请求记录了
+
+        # 判断是否限制了起止日期
+        if request_action_log.start_date and request_action_log.end_date:
+            # 判断是否在起止日期段内
+            if not check_date_in_range(start_date=request_action_log.start_date, end_date=request_action_log.end_date):
+                # 不在日期段内
+                messages.error(request, '当前不在起止日期段内，不可以执行该操作')
+                return redirect('AdminSecond:merchandise_request')
 
         # 标记为已完成并记录完成时间
         request_action_log.is_finished = True

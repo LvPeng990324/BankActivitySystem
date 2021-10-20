@@ -9,6 +9,7 @@ from RequestAction.models import RequestAction
 from RequestAction.models import RequestActionLog
 
 from utils.login_checker import admin_third_login_required
+from utils.DateUtils import check_date_in_range
 
 
 class MerchandiseRequest(View):
@@ -28,6 +29,8 @@ class MerchandiseRequest(View):
         pending_request_action_logs = request_action_logs.filter(is_finished=False)
         finished_request_action_logs = request_action_logs.filter(is_finished=True)
 
+        print(11111)
+
         context = {
             'request_actions': request_actions,
             'pending_request_action_logs': pending_request_action_logs,
@@ -46,8 +49,16 @@ class MerchandiseRequest(View):
         except RequestActionLog.DoesNotExist:
             # 未取到该请求记录
             messages.error(request, '未取到该请求记录，请重试')
-            return redirect('AdminThird:merchandise_management')
+            return redirect('AdminThird:merchandise_request')
         # 取到该请求记录了
+
+        # 判断是否限制了起止日期
+        if request_action_log.start_date and request_action_log.end_date:
+            # 判断是否在起止日期段内
+            if not check_date_in_range(start_date=request_action_log.start_date, end_date=request_action_log.end_date):
+                # 不在日期段内
+                messages.error(request, '当前不在起止日期段内，不可以执行该操作')
+                return redirect('AdminThird:merchandise_request')
 
         # 标记为已完成并记录完成时间
         request_action_log.is_finished = True
@@ -56,6 +67,6 @@ class MerchandiseRequest(View):
 
         # 返回成功信息
         messages.success(request, '标记完成成功')
-        return redirect('AdminThird:merchandise_management')
+        return redirect('AdminThird:merchandise_request')
 
 
