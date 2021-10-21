@@ -1,0 +1,123 @@
+{% extends 'Customer/base.html' %}
+
+{% block title %}我的积分{% endblock %}
+{% block page_title %}我的积分{% endblock %}
+{% block my_integral_active %}active{% endblock %}
+
+{% block main_content %}
+<div class="container-fluid">
+  {# 兑换商品卡片 #}
+  <div class="row">
+    <div class="col-lg-12">
+      <div class="card">
+        <div class="card-toolbar clearfix">
+          <h4>兑换商品</h4>
+          <span class="label label-outline-primary">我的积分：{{ integral }}</span>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-bordered table-hover">
+              <thead>
+                <tr>
+                  <th>序号</th>
+                  <th>商品名</th>
+                  <th>积分价格</th>
+                  <th>库存量</th>
+                  <th>商品介绍</th>
+                  <th>兑换</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for merchandise in merchandises %}
+                <tr>
+                  <td>{{ forloop.counter }}</td>  {# 序号 #}
+                  <td>{{ merchandise.name }}</td>  {# 商品名 #}
+                  <td>{{ merchandise.integral_price }}</td>  {# 积分价格 #}
+                  <td>{{ merchandise.remain_num }}</td>  {# 库存量 #}
+                  <td>{{ merchandise.description }}</td>  {# 商品介绍 #}
+                  <td nowrap="norap">  {# 兑换 #}
+                    <a data-toggle="modal" data-target="#exchange_merchandise" class="btn btn-xs btn-default" title="兑换"
+                    onclick="give_exchange_merchandise_modal('{{ merchandise.id }}')">
+                        <i class="mdi mdi-cart-plus"></i>
+                    </a>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {# 商品兑换记录卡片 #}
+  <div class="row">
+    <div class="col-lg-12">
+      <div class="card">
+        <div class="card-toolbar clearfix">
+          <h4>商品兑换记录</h4>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-bordered table-hover">
+              <thead>
+                <tr>
+                  <th>序号</th>
+                  <th>商品名</th>
+                  <th>兑换时间</th>
+                  <th>完成兑换时间</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for merchandise_exchange_record in merchandise_exchange_records %}
+                <tr>
+                  <td>{{ forloop.counter }}</td>  {# 序号 #}
+                  <td>{{ merchandise_exchange_record.merchandise.name }}</td>  {# 商品名 #}
+                  <td>{{ merchandise_exchange_record.create_time }}</td>  {# 兑换时间 #}
+                  <td>{{ merchandise_exchange_record.exchanged_time|default_if_none:'兑换中...' }}</td>  {# 完成兑换时间 #}
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block modal_content %}
+<!-- 兑换商品模态框 -->
+<div class="modal fade" id="exchange_merchandise" tabindex="-1" role="dialog" aria-labelledby="delModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <form action="{% url 'Customer:my_integral' %}" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input id="id_exchange_merchandise_id" name="exchange_merchandise_id" hidden>
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="delModalLabel">兑换商品</h4>
+        </div>
+        <div class="modal-body">
+          <p>确定要兑换这个商品吗？</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+          <button type="submit" class="btn btn-info">确定</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block js_content %}
+<script>
+function give_exchange_merchandise_modal(merchandise_id) {
+    $('#id_exchange_merchandise_id').val(merchandise_id);
+}
+</script>
+{% endblock %}
+
