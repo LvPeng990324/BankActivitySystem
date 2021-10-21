@@ -1,0 +1,123 @@
+{% extends 'AdminThird/base.html' %}
+
+{% block title %}商品兑换{% endblock %}
+{% block page_title %}商品兑换{% endblock %}
+{% block merchandise_exchange_active %}active{% endblock %}
+
+{% block main_content %}
+<div class="container-fluid">
+  {# 待兑换记录 #}
+  <div class="row">
+    <div class="col-lg-12">
+      <div class="card">
+        <div class="card-toolbar clearfix">
+          <h4>待兑换记录</h4>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-bordered table-hover">
+              <thead>
+                <tr>
+                  <th>序号</th>
+                  <th>商品名</th>
+                  <th>客户</th>
+                  <th>发起兑换时间</th>
+                  <th>兑换完成</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for pending_merchandise_exchange_record in pending_merchandise_exchange_records %}
+                <tr>
+                  <td>{{ forloop.counter }}</td>  {# 序号 #}
+                  <td>{{ pending_merchandise_exchange_record.merchandise.name }}</td>  {# 商品名 #}
+                  <td>{{ pending_merchandise_exchange_record.customer.name }}-{{ pending_merchandise_exchange_record.customer.phone }}</td>  {# 客户 #}
+                  <td>{{ pending_merchandise_exchange_record.create_time }}</td>  {# 发起兑换时间内 #}
+                  <td>  {# 兑换完成 #}
+                    <a data-toggle="modal" data-target="#finish_exchange" class="btn btn-xs btn-default" title="兑换完成"
+                    onclick="give_finish_exchange_modal(
+                            '{{ pending_merchandise_exchange_record.id }}',
+                    )">
+                        <i class="mdi mdi-comment-check"></i>
+                    </a>
+                  </td>
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  {# 已兑换记录 #}
+  <div class="row">
+    <div class="col-lg-12">
+      <div class="card">
+        <div class="card-toolbar clearfix">
+          <h4>已兑换记录</h4>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-bordered table-hover">
+              <thead>
+                <tr>
+                  <th>序号</th>
+                  <th>商品名</th>
+                  <th>客户</th>
+                  <th>发起兑换时间</th>
+                  <th>兑换完成时间</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for finished_merchandise_exchange_record in finished_merchandise_exchange_records %}
+                <tr>
+                  <td>{{ forloop.counter }}</td>  {# 序号 #}
+                  <td>{{ finished_merchandise_exchange_record.merchandise.name }}</td>  {# 商品名 #}
+                  <td>{{ finished_merchandise_exchange_record.customer.name }}-{{ finished_merchandise_exchange_record.customer.phone }}</td>  {# 客户 #}
+                  <td>{{ finished_merchandise_exchange_record.create_time }}</td>  {# 发起兑换时间内 #}
+                  <td>{{ finished_merchandise_exchange_record.exchanged_time }}</td>  {# 兑换完成时间 #}
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block modal_content %}
+<!-- 兑换完成模态框 -->
+<div class="modal fade" id="finish_exchange" tabindex="-1" role="dialog" aria-labelledby="delModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <form action="{% url 'AdminThird:merchandise_exchange' %}" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input id="id_merchandise_exchange_record_id" name="merchandise_exchange_record_id" hidden>
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="delModalLabel">兑换完成</h4>
+        </div>
+        <div class="modal-body">
+          <p>确定将该记录标记为已兑换吗？</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+          <button type="submit" class="btn btn-info">确定</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block js_content %}
+<script>
+function give_finish_exchange_modal(merchandise_exchange_record_id) {
+    $('#id_merchandise_exchange_record_id').val(merchandise_exchange_record_id);
+}
+</script>
+{% endblock %}
