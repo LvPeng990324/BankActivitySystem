@@ -17,6 +17,7 @@ def get_merchandise_info(request):
     return JsonResponse(data={
         'name': merchandise.name,
         'remain_num': merchandise.remain_num,
+        'integral_price': merchandise.integral_price,
         'description': merchandise.description,
     })
 
