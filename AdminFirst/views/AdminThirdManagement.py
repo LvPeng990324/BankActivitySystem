@@ -4,6 +4,7 @@ from django.shortcuts import redirect
 from django .views import View
 from datetime import datetime
 from django.utils.decorators import method_decorator
+from django.contrib import messages
 
 from AdminFirst.models import AdminFirst
 from AdminSecond.models import AdminSecond
@@ -59,6 +60,9 @@ class AdminThirdManagement(View):
         # 取出所有二级管理员
         admin_seconds = AdminSecond.objects.all()
 
+        # 取出所有三级管理员
+        admin_third_all = AdminThird.objects.all()
+
         # 打包数据
         context = {
             'error_message': request.session.pop('error_message') if request.session.get('error_message') else None,
@@ -68,6 +72,7 @@ class AdminThirdManagement(View):
             'name': admin_first.name,
             'admin_thirds_customer_num': admin_thirds_customer_num,
             'admin_seconds': admin_seconds,
+            'admin_third_all': admin_third_all,
         }
         return render(request, 'AdminFirst/admin-third-management.html', context=context)
 
@@ -78,6 +83,7 @@ class AdminThirdManagement(View):
         # del 删除
         # change_password 修改密码
         # change_admin_second 变更二级管理员
+        # transfer_customer 转让名下客户
         action = request.POST.get('action')
         if action == 'add':
             # 获取新增信息
@@ -152,6 +158,31 @@ class AdminThirdManagement(View):
             request.session['success_message'] = '变更成功'
             # 重定向三级管理员管理页面
             return redirect('AdminFirst:admin_third_management')
+        elif action == 'transfer_customer':
+            # 获取两个三级管理员的id
+            from_admin_third_id = request.POST.get('transfer_customer_admin_third_id')
+            to_admin_third_id = request.POST.get('transfer_admin_third')
+
+            # 取出这两个三级管理员
+            try:
+                from_admin_third = AdminThird.objects.get(id=from_admin_third_id)
+                to_admin_third = AdminThird.objects.get(id=to_admin_third_id)
+            except AdminThird.DoesNotExist:
+                # 未取到
+                messages.error(request, '未取到该客户经理，请刷新重试')
+                return redirect('AdminFirst:admin_third_management')
+            # 取到这两个三级管理员了
+
+            # 遍历将from名下的客户转移到to名下
+            for customer_activity_record in from_admin_third.activityrecord_set.all():
+                customer_activity_record.admin_third = to_admin_third
+                customer_activity_record.save()
+            # 转移完毕
+
+            # 记录成功信息
+            messages.success(request, '转让成功')
+            return redirect('AdminFirst:admin_third_management')
+
         else:
             # 未知错误，不明的操作
             # 记录非法操作错误并重定向三级管理员管理页面

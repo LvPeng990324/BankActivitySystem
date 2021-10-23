@@ -68,6 +68,10 @@
                                 '{{ admin_third_customer_num.admin_third.admin_second.id }}')">
                             <i class="mdi mdi-account-convert"></i>
                         </a>
+                        <a data-toggle="modal" data-target="#transfer_customer" class="btn btn-xs btn-default" title="转让名下客户"
+                        onclick="give_transfer_customer_modal('{{ admin_third_customer_num.admin_third.id }}')">
+                            <i class="mdi mdi-account-switch"></i>
+                        </a>
                         <a data-toggle="modal" data-target="#del" class="btn btn-xs btn-default" title="删除"
                         onclick="give_del_modal('{{ admin_third_customer_num.admin_third.id }}')">
                             <i class="mdi mdi-window-close"></i>
@@ -191,6 +195,39 @@
     </div>
 </div>
 
+<!-- 转让名下客户 -->
+<div class="modal fade" id="transfer_customer" tabindex="-1" role="dialog" aria-labelledby="delModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <form action="{% url 'AdminFirst:admin_third_management' %}" method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <input name="action" value="transfer_customer" hidden>
+                <input id="id_transfer_customer_admin_third_id" name="transfer_customer_admin_third_id" hidden>
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span
+                            aria-hidden="true">&times;</span></button>
+                    <h4 class="modal-title" id="delModalLabel">转让名下客户</h4>
+                </div>
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="id_transfer_admin_third" class="control-label">转让给：</label>
+                        <select id="id_transfer_admin_third" name="transfer_admin_third" class="form-control">
+                            {% for admin_third in admin_third_all %}
+                            <option value="{{ admin_third.id }}">{{ admin_third.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                    <p id="id_transfer_customer_prompt" style="color: orange"></p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+                    <button type="submit" class="btn btn-warning">转让所有</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <!-- 删除二级管理员 -->
 <div class="modal fade" id="del" tabindex="-1" role="dialog" aria-labelledby="delModalLabel">
     <div class="modal-dialog" role="document">
@@ -233,6 +270,13 @@
     function give_change_admin_second_modal(change_id, admin_second_id) {
         $('#id_change_admin_second_id').val(change_id);
         $('#id_change_admin_second').val(admin_second_id);
+    }
+</script>
+
+<!-- 给转让名下客户模态框传值 -->
+<script type="text/javascript">
+    function give_transfer_customer_modal(admin_third_id) {
+        $('#id_transfer_customer_admin_third_id').val(admin_third_id);
     }
 </script>
 
