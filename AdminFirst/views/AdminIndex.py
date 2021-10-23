@@ -8,6 +8,7 @@ from django.utils.decorators import method_decorator
 from ActivitySignUp.models import ActivityRecord
 from ActivitySignUp.models import Activity
 from AdminFirst.models import AdminFirst
+from RequestAction.models import RequestActionLog
 
 from utils.login_checker import admin_first_login_required
 
@@ -79,6 +80,10 @@ class AdminIndex(View):
                 'customer_num': customer_num,
             })
 
+        # 统计完成的和未完成的客户请求数量
+        finished_request_action_log_count = RequestActionLog.objects.filter(is_finished=True).count()  # 已完成的
+        pending_request_action_log_count = RequestActionLog.objects.filter(is_finished=False).count()  # 未完成的
+
         # 打包信息
         context = {
             'name': admin_first.name,
@@ -88,6 +93,8 @@ class AdminIndex(View):
             'recent_activities_10': recent_activities_10,
             'recent_activity_customer_num': recent_activity_customer_num[::-1],  # 为了图表好看，反转元素
             'recent_day_customer_num': recent_day_customer_num[::-1],  # 为了图表好看，反转元素
+            'finished_request_action_log_count': finished_request_action_log_count,
+            'pending_request_action_log_count': pending_request_action_log_count,
         }
         return render(request, 'AdminFirst/admin-index.html', context=context)
 
