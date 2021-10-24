@@ -44,3 +44,22 @@ class Customer(models.Model):
         return self.name
 
 
+class IntegralGiveLog(models.Model):
+    """ 积分发放记录
+    """
+    customer = models.ForeignKey(Customer, on_delete=models.CASCADE, verbose_name='客户', help_text='客户')
+    admin_name = models.CharField(max_length=32, verbose_name='发放管理员姓名', help_text='发放管理员姓名')
+    give_num = models.IntegerField(verbose_name='发放数量', help_text='发放数量')
+    create_time = models.DateTimeField(auto_now_add=True, verbose_name='创建时间', help_text='创建时间')
+
+    class Meta:
+        verbose_name_plural = '积分发放记录'
+        verbose_name = '积分发放记录'
+
+    def __str__(self):
+        return '{}-{}-{}'.format(
+            self.id,
+            self.customer.name,
+            self.give_num,
+        )
+

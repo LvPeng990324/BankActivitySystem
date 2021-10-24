@@ -10,6 +10,7 @@ from AdminThird.views.BatchSend import BatchSend
 from AdminThird.views.MerchandiseManagement import MerchandiseManagement
 from AdminThird.views.MerchandiseRequest import MerchandiseRequest
 from AdminThird.views.MerchandiseExchange import MerchandiseExchange
+from AdminThird.views.GiveIntegral import GiveIntegral
 
 from utils.LogOut import admin_logout
 
@@ -38,6 +39,8 @@ urlpatterns = [
     path('merchandise-request/', MerchandiseRequest.as_view(), name='merchandise_request'),
     # 商品兑换
     path('merchandise-exchange/', MerchandiseExchange.as_view(), name='merchandise_exchange'),
+    # 发放积分
+    path('give-integral/', GiveIntegral.as_view(), name='give_integral'),
 
     # 登出
     path('logout/', admin_logout, name='logout'),

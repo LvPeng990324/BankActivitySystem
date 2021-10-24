@@ -8,6 +8,7 @@ from AdminSecond.views.ActivityManagement import ActivityManagement
 from AdminSecond.views.NoticeTemplateManagement import NoticeTemplateManagement
 from AdminSecond.views.MerchandiseManagement import MerchandiseManagement
 from AdminSecond.views.MerchandiseRequest import MerchandiseRequest
+from AdminSecond.views.GiveIntegral import GiveIntegral
 
 from utils.LogOut import admin_logout
 
@@ -32,6 +33,8 @@ urlpatterns = [
     path('merchandise-management/', MerchandiseManagement.as_view(), name='merchandise_management'),
     # 商户请求
     path('merchandise-request/', MerchandiseRequest.as_view(), name='merchandise_request'),
+    # 发放积分
+    path('give-integral/', GiveIntegral.as_view(), name='give_integral'),
 
     # 登出
     path('logout/', admin_logout, name='logout'),
