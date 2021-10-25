@@ -79,6 +79,7 @@
                   <th>请求时间</th>
                   <th>起止日期</th>
                   <th>请求动作</th>
+                  <th>商户备注</th>
                   <th>确认</th>
                 </tr>
               </thead>
@@ -90,6 +91,7 @@
                   <td>{{ pending_request_action_log.create_time }}</td>  {# 请求时间 #}
                   <td>{{ pending_request_action_log.start_date|default_if_none:'' }} - {{ pending_request_action_log.end_date|default_if_none:'' }}</td>  {# 起止日期 #}
                   <td>{{ pending_request_action_log.name }}</td>  {# 请求动作 #}
+                  <td>{{ finished_request_action_log.remark|default_if_none:'' }}</td>  {# 商户备注 #}
                   <td nowrap="norap">
                     <a data-toggle="modal" data-target="#confirm_finished" class="btn btn-xs btn-default" title="确认"
                     onclick="give_confirm_finished_modal('{{ pending_request_action_log.id }}')">
@@ -124,6 +126,7 @@
                   <th>请求时间</th>
                   <th>起止日期</th>
                   <th>请求动作</th>
+                  <th>商户备注</th>
                   <th>完成时间</th>
                 </tr>
               </thead>
@@ -135,6 +138,7 @@
                   <td>{{ finished_request_action_log.create_time }}</td>  {# 请求时间 #}
                   <td>{{ finished_request_action_log.start_date|default_if_none:'' }} - {{ finished_request_action_log.end_date|default_if_none:'' }}</td>  {# 起止日期 #}
                   <td>{{ finished_request_action_log.name }}</td>  {# 请求动作 #}
+                  <td>{{ finished_request_action_log.remark|default_if_none:'' }}</td>  {# 商户备注 #}
                   <td>{{ finished_request_action_log.finished_time }}</td>  {# 完成时间 #}
 
                 </tr>
