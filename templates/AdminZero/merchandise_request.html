@@ -18,6 +18,50 @@
     </div>
   {% endif %}
 
+  {# 请求动作表格 #}
+  <div class="row">
+    <div class="col-lg-12">
+      <div class="card">
+        <div class="card-toolbar clearfix">
+          <div class="pull-left">
+            <h4>请求动作管理</h4>
+          </div>
+          <div class="pull-right">
+            <a data-toggle="modal" data-target="#add_request_action" class="btn btn-primary m-r-5"><i class="mdi mdi-plus"></i> 新增</a>
+          </div>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-bordered table-hover">
+              <thead>
+                <tr>
+                  <th>序号</th>
+                  <th>动作名称</th>
+                  <th>编辑</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for request_action in request_actions %}
+                <tr>
+                  <td>{{ forloop.counter }}</td>  {# 序号 #}
+                  <td>{{ request_action.name }}</td>  {# 动作名称 #}
+                  <td nowrap="norap">
+                    <a data-toggle="modal" data-target="#delete_request_action" class="btn btn-xs btn-default" title="关闭"
+                    onclick="give_delete_request_action_modal('{{ request_action.id }}')">
+                        <i class="mdi mdi-window-close"></i>
+                    </a>
+                  </td>
+
+                </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   {# 分配任务表格 #}
   <div class="row">
     <div class="col-lg-12">
@@ -28,6 +72,7 @@
         <div class="card-body">
           <form method="post" action="{% url 'AdminZero:merchandise_request' %}" class="site-form">
             {% csrf_token %}
+            <input name="action" value="send_request_action" hidden>
             <div class="form-group">
               <label for="id_request_action">任务</label>
               <select class="form-control" id="id_request_action" name="request_action" required>
@@ -142,11 +187,68 @@
 </div>
 {% endblock %}
 
+{% block modal_content %}
+<!-- 新增请求动作模态框 -->
+<div class="modal fade" id="add_request_action" tabindex="-1" role="dialog" aria-labelledby="delModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <form action="{% url 'AdminZero:merchandise_request' %}" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input name="action" value="add_request_action" hidden>
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="delModalLabel">新增请求动作</h4>
+        </div>
+        <div class="modal-body">
+          <div class="form-group">
+            <label class="control-label">名称</label>
+            <input class="form-control" id="id_new_name" name="new_name" placeholder="请输入动作名称..." required>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+          <button type="submit" class="btn btn-info">确认</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+
+<!-- 删除请求动作模态框 -->
+<div class="modal fade" id="delete_request_action" tabindex="-1" role="dialog" aria-labelledby="delModalLabel">
+  <div class="modal-dialog" role="document">
+    <div class="modal-content">
+      <form action="{% url 'AdminZero:merchandise_request' %}" method="post" enctype="multipart/form-data">
+        {% csrf_token %}
+        <input name="action" value="delete_request_action" hidden>
+        <input id="id_delete_request_action_id" name="delete_request_action_id" hidden>
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+          <h4 class="modal-title" id="delModalLabel">确认删除</h4>
+        </div>
+        <div class="modal-body">
+          <p style="color: red;">确定删除该动作吗？</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">取消</button>
+          <button type="submit" class="btn btn-danger">确认</button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
 {% block js_content %}
 <script>
 {# 给确认完成模态框赋值 #}
 function give_confirm_finished_modal(request_action_log_id) {
     $('#id_request_action_log_id').val(request_action_log_id);
+}
+
+{# 给删除请求动作模态框赋值 #}
+function give_delete_request_action_modal(request_action_id) {
+    $('#id_delete_request_action_id').val(request_action_id);
 }
 </script>
 {% endblock %}

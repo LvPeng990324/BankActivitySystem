@@ -44,33 +44,87 @@ class MerchandiseRequest(View):
 
     @method_decorator(admin_second_login_required)
     def post(self, request):
-        # 获取要记录完成的请求记录id
-        request_action_log_id = request.POST.get('request_action_log_id')
-
-        # 取出该请求记录
-        try:
-            request_action_log = RequestActionLog.objects.get(id=request_action_log_id)
-        except RequestActionLog.DoesNotExist:
-            # 未取到该请求记录
-            messages.error(request, '未取到该请求记录，请重试')
+        # 获取action
+        action = request.POST.get('action')
+        # 根据action进行动作
+        if action == 'confirm_finished':
+            return confirm_finished_action(request)
+        elif action == 'delete_request_action':
+            return delete_request_action_action(request)
+        elif action == 'add_request_action':
+            return add_request_action_action(request)
+        else:
+            messages.error(request, '未定义的动作，请重试')
             return redirect('AdminSecond:merchandise_request')
-        # 取到该请求记录了
 
-        # 判断是否限制了起止日期
-        if request_action_log.start_date and request_action_log.end_date:
-            # 判断是否在起止日期段内
-            if not check_date_in_range(start_date=request_action_log.start_date, end_date=request_action_log.end_date):
-                # 不在日期段内
-                messages.error(request, '当前不在起止日期段内，不可以执行该操作')
-                return redirect('AdminSecond:merchandise_request')
 
-        # 标记为已完成并记录完成时间
-        request_action_log.is_finished = True
-        request_action_log.finished_time = datetime.datetime.now()
-        request_action_log.save()
+def confirm_finished_action(request):
+    """ 确认完成动作
+    """
+    # 获取要记录完成的请求记录id
+    request_action_log_id = request.POST.get('request_action_log_id')
 
-        # 返回成功信息
-        messages.success(request, '标记完成成功')
+    # 取出该请求记录
+    try:
+        request_action_log = RequestActionLog.objects.get(id=request_action_log_id)
+    except RequestActionLog.DoesNotExist:
+        # 未取到该请求记录
+        messages.error(request, '未取到该请求记录，请重试')
         return redirect('AdminSecond:merchandise_request')
+    # 取到该请求记录了
+
+    # 判断是否限制了起止日期
+    if request_action_log.start_date and request_action_log.end_date:
+        # 判断是否在起止日期段内
+        if not check_date_in_range(start_date=request_action_log.start_date, end_date=request_action_log.end_date):
+            # 不在日期段内
+            messages.error(request, '当前不在起止日期段内，不可以执行该操作')
+            return redirect('AdminSecond:merchandise_request')
+
+    # 标记为已完成并记录完成时间
+    request_action_log.is_finished = True
+    request_action_log.finished_time = datetime.datetime.now()
+    request_action_log.save()
+
+    # 返回成功信息
+    messages.success(request, '标记完成成功')
+    return redirect('AdminSecond:merchandise_request')
 
 
+def delete_request_action_action(request):
+    """ 删除请求动作动作
+    """
+    # 获取要删除的请求动作id
+    delete_request_action_id = request.POST.get('delete_request_action_id')
+
+    # 取出该动作
+    try:
+        delete_request_action = RequestAction.objects.get(id=delete_request_action_id)
+    except RequestAction.DoesNotExist:
+        # 未取到该动作
+        messages.error(request, '未取到该请求动作')
+        return redirect('AdminSecond:merchandise_request')
+    # 取到该请求动作了
+
+    # 删除
+    delete_request_action.delete()
+
+    # 记录成功信息
+    messages.success(request, '删除成功')
+    return redirect('AdminSecond:merchandise_request')
+
+
+def add_request_action_action(request):
+    """ 新增请求动作动作
+    """
+    # 获取信息
+    new_name = request.POST.get('new_name')
+
+    # 创建动作
+    RequestAction.objects.create(
+        name=new_name,
+    )
+
+    # 记录成功信息
+    messages.success(request, '新增成功')
+    return redirect('AdminSecond:merchandise_request')
