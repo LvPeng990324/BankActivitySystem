@@ -28,7 +28,7 @@ class Customer(models.Model):
     tag_type = models.CharField(max_length=20, default='secondary', verbose_name='标签类型')
     is_vip = models.BooleanField(default=False, verbose_name='是否会员')
     card_num = models.CharField(max_length=20, default='', verbose_name='邮政卡卡号')
-    password = models.CharField(max_length=100, default='', verbose_name='密码')
+    password = models.CharField(max_length=100, default='96e79218965eb72c92a549dd5a330112', verbose_name='密码')  # 默认111111
     comment = models.TextField(default='', verbose_name='备注')
     is_merchant = models.BooleanField(null=True, blank=True, verbose_name='是否为商户', help_text='是否为商户')
     is_installed_micro_post_pay = models.BooleanField(null=True, blank=True, verbose_name='是否安装微邮付', help_text='是否安装微邮付')
